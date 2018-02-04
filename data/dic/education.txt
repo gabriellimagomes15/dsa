@@ -1,0 +1,4 @@
+'bachelor'
+'master'
+'phd'
+'mba'

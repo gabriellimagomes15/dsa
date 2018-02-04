@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jobs Vacancies Analysis</title>
+
+
+  <script src="http://code.jquery.com/jquery-3.2.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+  <script type="text/javascript" src='js/d3.min.js'></script>
+  <script type="text/javascript" src='js/charts.js'></script>
+  <script type="text/javascript" src='js/d3ScaleColor.js'></script>
+  <script type="text/javascript" src='js/cloud.js'></script> 
+  <script type="text/javascript" src='js/bootstrap/bootstrap.min.js'></script> 
+
+  <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+  <script src="https://code.highcharts.com/maps/modules/data.js"></script>
+  <script src="https://code.highcharts.com/mapdata/custom/europe.js"></script>
+  
+  <!--script src="https://code.highcharts.com/mapdata/custom/usa-and-canada.js"></script-->
+  <script src='js/usa-and-canada.js'></script>
+
+  <script src="https://use.fontawesome.com/e6b4ddaa2c.js"></script>
+
+  <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" href="css/charts.css">
+
+  <link href="css/sb-admin.css" rel="stylesheet">
+
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  
+  <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<!--
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+-->
+  <!-- Page level plugin CSS-->
+
+  <!-- Custom fonts for this template-->
+<style type="text/css">
+  .card.text-whit{e
+    box-shadow: 7px 7px 5px #ccc;
+  }
+  .fade.in {
+    opacity: 1;
+  }
+
+  h1 {
+    border-bottom: 3px solid #ccc;
+    padding: 0 0 10px 0;
+  }
+
+  .card-body{
+    text-align: center;
+  }
+
+  .dropdown-menu-center {
+    left: 50%;
+    right: auto;
+    text-align: center;
+    transform: translate(-50%, 0);
+  }
+</style>
+	
+</head>
+<body class="fixed-nav sticky-footer bg-dark" id="page-top" >
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+    <a class="navbar-brand" href="index.html">Home</a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse " id="navbarResponsive">
+      <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Home">
+          <a class="nav-link" href="#initial" data-toggle="tab">
+            <i class="fa fa-fw fa-home"></i>
+            <span class="nav-link-text">Home</span>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+          <a id='menudashboard' class="nav-link" href="#dashboard" data-toggle="tab">
+            <i class="fa fa-fw fa-dashboard"></i>
+            <span class="nav-link-text">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="About">
+          <a class="nav-link" href="#about" data-toggle="tab">
+            <i class="fa fa-fw fa-info"></i>
+            <span class="nav-link-text">About</span>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Contact">
+          <a class="nav-link" href="#contact" data-toggle="tab">
+            <i class="fa fa-fw fa-pencil"></i>
+            <span class="nav-link-text">Contact</span>
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav sidenav-toggler">
+        <li class="nav-item">
+          <a class="nav-link text-center" id="sidenavToggler">
+            <i class="fa fa-fw fa-angle-left"></i>
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a href="https://github.com/gabriellimagomes15"  target="_blank"
+         class="header-logo-invertocat my-0" style="padding: 5px 10px" data-toggle="tooltip" 
+         data-placement="bottom" title="GitHub!" >
+            <svg aria-hidden="true" class="octicon octicon-mark-github" style="fill: #fff;"
+              height="30" version="1.1" viewBox="0 0 16 16" width="32">
+              <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+            </svg>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="modal" data-target="#exampleModal">
+            <i class="fa fa-fw fa-sign-out"></i>Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div class="content-wrapper tab-content">
+    <div id='initial' class="container-fluid tab-pane fade in active " role="tabpanel">
+      <div class="jumbotron container">
+          <div class="col-md-10">
+            <h1>Jobs Vacancies Analysis</h1>
+          </div>
+          <div class="col-md-10">
+            <p> This is a web app to analysis jobs vacancies data, with dashboards about 
+              posts vacancies by date, skills (tech skills, languages and educations), jobs by cities, positions, cluster data mining of requeriments.</p>
+            <p>The date were collect in Glassdoor.com by web scrapping.</p>
+            <div class="alert alert-success">
+              <p><strong> <span class='numbjobs'> More of 1,000 </span> jobs vacancies.</strong></p>
+            </div>
+          </div>
+      </div>
+    </div>
+    <div id='dashboard' class="container-fluid tab-pane fade  " role="tabpanel">
+      <!-- Breadcrumbs-->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="#">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">My Dashboard</li>
+      </ol>
+      <!-- Icon Cards-->
+      <div class="row">
+        <div class="col-xl-3 col-sm-6 mb-3">
+          <div class="card text-white bg-primary o-hidden h-70">
+            <div class="card-body boxone">
+              <div class="card-body-icon">
+                <i class="fa fa-fw fa-database"></i>
+              </div>
+              <div id='boxnumber' class="mr-5"></div>
+            </div>
+            <!--a class="card-footer text-white clearfix small z-1" href="#">
+              <span class="float-left">View Details</span>
+              <span class="float-right">
+                <i class="fa fa-angle-right"></i>
+              </span>
+            </a-->
+          </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-3">
+          <div class="card text-white bg-warning h-70">
+            <div class="card-body boxtwo">
+              <div class="card-body-icon">
+                <i class="fa fa-fw fa-globe"></i>
+              </div>
+              <div id='boxnumbertwo' class="mr-5"></div>
+            </div>
+            <div class="dropdown" style="">
+                <select id='selcountry' class="selectpicker bg-warning text-white" style="width: 100%">
+                  <option value="todos"> Todos </option>
+                </select>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-3">
+          <div class="card text-white bg-success o-hidden h-70">
+            <div class="card-body boxthird">
+              <div class="card-body-icon">
+                <i class="fa fa-fw fa-location-arrow"></i>
+              </div>
+              <div id='boxnumberthird' class="mr-5"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-3">
+          <div class="card text-white bg-danger o-hidden h-70">
+            <div class="card-body boxfour">
+              <div class="card-body-icon">
+                <i class="fa fa-fw fa-building"></i>
+              </div>
+              <div id='boxnumberfour' class="mr-5"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Area Chart Example-->
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-line-chart"></i> Jobs Vacancies by Date</div>
+        <div id='linechart' class="card-body" ></div>
+        <!--svg id='linechart' class="d"></svg> -->
+        <div class="card-footer small text-muted">Updated in <span></span></div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-8">
+          <!-- Example Bar Chart Card-->
+          <div class="card mb-3">
+            <div class="card-header">
+              <i class="fa fa-bar-chart"></i> Jobs Position</div>
+            <div id='barchart' class="card-body">
+              <!--div class="row">
+                <div id='barchart' class="col-sm-8 my-auto"></div>
+                <div class="col-sm-4 text-center my-auto">
+                  <div class="h4 mb-0 text-primary">$34,693</div>
+                  <div class="small text-muted">YTD Revenue</div>
+                  <hr>
+                  <div class="h4 mb-0 text-warning">$18,474</div>
+                  <div class="small text-muted">YTD Expenses</div>
+                  <hr>
+                  <div class="h4 mb-0 text-success">$16,219</div>
+                  <div class="small text-muted">YTD Margin</div>
+                </div-->
+              </div>
+              <div class="card-footer small text-muted">Updated in <span></span></div>
+            </div>
+          
+          <div class="card mb-3">
+            <div class="card-header"><i class="fa fa-trello"></i> Treemap of Jobs Vacancies by City</div>
+            <div id='treemap' class="card-body"></div>
+            <div class="card-footer small text-muted">Updated in <span></span></div>
+          </div>
+          <div class="card mb-3">
+            <div class="card-header"><i class="fa fa-map"></i> Map of Requirements Cluster by States</div>
+            <div id='clustermap' class="card-body col-sm-12 my-auto" ></div>
+                <!--div id="container" style="height: 600px; min-width: 310px; max-width: 980px; margin: 0 auto"></div-->
+            <div class="card-footer small text-muted">Updated in <span></span></div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <!-- Example Pie Chart Card-->
+          <div class="card mb-3">
+            <div class="card-header">
+              <i class="fa fa-pie-chart"></i> Languages Requirements</div>
+            <div id='piechart' class="card-body"></div>
+            <div class="card-footer small text-muted">Updated in <span></span></div>
+          </div>
+          <div class="card mb-3">
+            <div class="card-header">
+              <i class="fa fa-pie-chart"></i> Education Requirements</div>
+            <div id='piecharttwo' class="card-body"></div>
+            <div class="card-footer small text-muted">Updated in <span></span></div>
+          </div>
+          <div class="card mb-3">
+            <div class="card-header">
+              <i class="fa fa-circle"></i> Tech Skills Requirements</div>
+            <div id='bubblechart' class="card-body"></div>
+            <div class="card-footer small text-muted">Updated in <span></span></div>
+          </div>
+        </div>        
+      </div>
+    </div>
+    <div id='about' class="container-fluid tab-pane fade " role="tabpanel">
+      <div class="container jumbotron">
+        <div class="col-md-12">
+          <h1>About</h1>
+        </div>
+        <div class="col-md 10">
+          <p>
+            This application aims to make analysis of job vacancies in data science.
+          </p>
+          <p>
+            The data was collected by doing a web scrape on the employment site, <a href='https://www.glassdoor.com/index.htm'> glassdoor.com </a>. This data has undergone a cleanup and transformation process and has also been applied clustering data mining algorithm to identify provinces that have similar requirements.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div id='contact' class="container-fluid tab-pane fade " role="tabpanel">
+        <div class="jumbotron container">
+          <div class="row">
+            <div class="col-md-10">
+              <h1>Contact me</h1>
+            </div>
+            <div class="col-md-10">
+              <h3><b>Email:</b></h3> 
+              <h4>gabriel.lg08@gmail.com</h4>
+            </div>
+            <div class="col-md-10">
+              <h3><b>Phone</b></h3> 
+              <h4>+55 61 985094857</h4>
+            </div>
+            <div class="col-sm-6">
+              <a href="https://github.com/gabriellimagomes15">
+                  <img style="width:50%;margin-left: -1em;" 
+                  src="https://www.monolitonimbus.com.br/wp-content/uploads/2017/12/github.png"/>
+              </a>
+            </div>
+            <div class="col-sm-6">
+              <a href="https://www.linkedin.com/in/gabriellimagomes/">
+                <img style="width:15%" 
+                  src="https://media.licdn.com/mpr/mpr/shrink_200_200/AAEAAQAAAAAAAANyAAAAJGRlZTNlZDQwLTk4YTItNDA1MS04MzBjLWJmNGQ5M2RmZGUxYw.png"/>
+                </a>
+            </div>
+          </div>
+          
+        </div>
+    </div>
+  </div>
+
+      <footer class="sticky-footer">
+      <div class="container">
+        <div class="text-center">
+          <small>Copyright © Gabriel Lima Gomes 2018</small>
+        </div>
+      </div>
+    </footer>
+    <a class="scroll-to-top rounded" href="#page-top" style="display: inline;">
+      <i class="fa fa-angle-up"></i>
+    </a>
+<!--div>
+  <svg id='d' width="960" height="960" font-family="sans-serif" font-size="10" text-anchor="middle"></svg>  
+</div>
+<svg id='row-1' class="row"></svg-->
+
+
+
+
+<script>
+  
+d3.select(window).on('resize',  resize );
+
+readData();
+
+function selectCountry(){
+
+}
+
+$('#selcountry').on('change',function(){
+  charts(this.value)
+})
+
+var tooltip = d3.select("body").append("div").attr("class", "toolTip"),
+    bisectDate = d3.bisector(function(d) { return d.year; }).left;
+
+$('#menudashboard').on('click',function(e){
+    //$('.card-body > *').empty()
+    //$('#dashboard').addClass('active').trigger(c());
+    setTimeout(charts,700,'');
+})
+
+$('#teste').click(function(){
+  console.log(dados.data)
+})
+
+function resize(){
+  if( $('#dashboard').hasClass('active')) {
+    $('.card-body > *').empty()
+    charts($('#selcountry').val()) 
+  }
+}
+function charts(countrySelect){
+  console.log('Charts')
+  $('.card-body > *').empty()
+
+  d3.csv('data/clusterReq2.csv', function(error, data){
+
+      console.log('cluster = ',data)
+      
+      data = data.filter(function(x) {  
+        if(countrySelect == 'Todos' || countrySelect == ''){
+          return x
+        }else{
+          return x.country == countrySelect
+        }
+      })
+      Highcharts.mapChart('clustermap', {
+          chart: {
+              spacingBottom: 20
+          },
+          title: {
+              text: ''
+          },
+
+          legend: {
+              enabled: true
+          },
+
+           mapNavigation: {
+              enabled: true
+          },
+
+          plotOptions: {
+              map: {
+                  allAreas: false,
+                  joinBy: ['hc-a2', 'code'],
+                  dataLabels: {
+                      enabled: true,
+                      color: '#FFFFFF',
+                      formatter: function () {
+                          if (this.point.properties && this.point.properties.labelrank.toString() < 5) {
+                              return this.point.properties['hc-a2'];
+                          }
+                      },
+                      format: null,
+                      style: {
+                          fontWeight: 'bold'
+                      }
+                  },
+                  mapData: Highcharts.maps['custom/usa-and-canada'],
+                  tooltip: {
+                      headerFormat: '',
+                      pointFormat:  '{point.name}: <b>{series.name}</b>'
+                  }
+
+              }
+          },
+
+          series: [{
+            name: 'Cluster 1',
+            data: data.filter(function(x) {  return x.Cluster == '1'}).map(function(y){ return {code: y.state}})
+          },{
+            name: 'Cluster 2',
+            data: data.filter(function(x) {  return x.Cluster == '2'}).map(function(y){ return {code: y.state}})
+         },{
+            name: 'Cluster 3',
+            data: data.filter(function(x) {  return x.Cluster == '3'}).map(function(y){ return {code: y.state}})
+         },{
+            name: 'Cluster 4',
+            data: data.filter(function(x) {  return x.Cluster == '4'}).map(function(y){ return {code: y.state}})
+         }
+        ]
+      });
+  });
+
+
+  var parseTime = d3.timeParse("%Y-%m-%d"); //d3.timeParse("%d-%b-%y");
+
+
+  //d3.csv("data/dadosFinal.csv", function(d) {
+      //console.log('da = ', d.dateClean)
+      //d.dateClean = parseTime(d.dateClean);
+      //d.count = +d.close;
+      //return d;
+    //}, function(error, data) {
+      //if (error) throw error;
+      //console.log(data)
+
+     
+
+      var data = dados.data
+      console.log(countrySelect)
+
+
+      var format = d3.format(",d"); 
+      var div2 = d3.select('#boxnumbertwo')
+      var countCountry = group(data,['country'])
+      d3.select('.boxtwo .card-body-icon').append('i').classed('fa fa-fw fa-globe', true)
+      
+      $('#selcountry > *').remove();
+      $('#selcountry').append($('<option>',{
+          value: 'Todos',
+          text: 'Todos'
+      })) 
+      $.each(countCountry,function(x,y){
+        $('#selcountry').append($('<option>',{
+          value: y.value,
+          text: y.value
+        }))
+      })
+      if(countrySelect != ''){
+        $('#selcountry').val(countrySelect);
+      }
+
+      boxNumber2.call(div2, {docs: countCountry, title: "Countries"})
+      
+
+      data = data.filter(function(x) {
+        if(countrySelect == 'Todos' || countrySelect == ''){
+          return x
+        }else{
+          return x.country == countrySelect
+        }
+      })
+      //TOTAL DE INSTITUIÇÕES PARTICIPANTES
+      var div1 = d3.select('#boxnumber')
+      //.append('div').attr('id','boxes')          .append('div')          .style('margin-right','10px')
+      
+      d3.select('.boxone .card-body-icon').append('i').classed('fa fa-fw fa-database', true)   
+      boxNumber2.call(div1, {docs: data, title: "Jobs Vacancies"})
+
+      //Number of jobs in initial page
+      d3.select('.numbjobs').text(data.length.toLocaleString('de-DE'))
+
+
+      var div2 = d3.select('#boxnumberthird')
+      
+      var countCities = group(data,['cityClear'])
+      d3.select('.boxthird .card-body-icon').append('i').classed('fa fa-fw fa-location-arrow ', true)   
+
+      boxNumber2.call(div2, {docs: countCities, title: "Cities"})
+
+      var div2 = d3.select('#boxnumberfour')
+      d3.select('.boxfour .card-body-icon').append('i').classed('fa fa-fw fa-building', true)   
+
+      var countPositions = group(data,['JobClear'])
+      boxNumber2.call(div2, {docs: countPositions, title: "Positions"})
+
+      
+
+      var dateUpdate = group(data, ['dateColect'])
+      var divUpdate = d3.selectAll('.card-footer span').text(dateUpdate[1].value)
+      
+      //MONTAR BOX/DIV COM INFORMAÇÕES NUMÉRICAS
+      /*boxNumber.call(div, {docs: data, title: "Total of Posts Jobs"})
+      console.log(data.length)
+         div.transition()
+              .duration(1500)
+              .on("start", function repeat() {
+                d3.active(this)
+                  .tween("text", function() {
+                      var that = d3.select(this),
+                          i = d3.interpolateNumber(that.text().replace(/,/g, ""), data.length);
+                      return function(t) { that.text(format(i(t))); };
+                  })
+                  .transition()
+                  .delay(2000)
+              });
+   */
+
+
+      /******** GRAFICO DE LINHA ****************************/
+      var w = parseInt(d3.select('#linechart').style('width')) *0.90,
+          h = parseInt(d3.select('#linechart').style('height')) *7
+          if(h == 0){
+             h = w * 0.2
+          }
+      console.log('w = ', w , h)
+      var line  = initVar.call(null, {id: '#linechart', titleDiv: "", class: '', width: w, height: h})
+      
+
+      groupDate = group(data,['dateClean'])
+
+      groupDate.map(function(x){      
+        //console.log(parseTime(x.value) )
+        x.value = parseTime(x.value)
+      })
+      
+      groupDate.sort(function(x, y){        
+        return y.value - x.value;
+      })
+
+      //console.log('csv = ', groupDate)
+
+      lineChart.call(line.g, {data:groupDate, margins: line.margins})
+
+      w = parseInt(d3.select('#bubblechart').style('width')) * 0.9,
+      h = parseInt(d3.select('#bubblechart').style('height')) * 9
+
+      var bolha = initVar.call(null, {id: '#bubblechart', titleDiv: "", class: '', width: w, height:h})
+
+      var arraySkill = []
+      data.map(function(x){
+        x.skills.split(' ').map(function(d){
+          //console.log(d)
+          arraySkill.push({skill:d})
+        })
+      })
+      var groupSkill = group(arraySkill,['skill'])
+      groupSkill = groupSkill.filter(function(x) {return x.value != "" })
+      
+      
+      groupSkill = groupSkill.filter(function(x){return x.count > 15})
+      groupSkill.sort(function(x,y){
+        return y.count - x.count
+      })
+
+
+      bolha.margins.margin.bottom = 100;
+      bolha.margins.margin.left = 30;
+
+      //console.log(bolha.margins);
+
+
+      bolha.g.attr("text-anchor","middle").attr('font-family',"sans-serif").attr('font-size',"10")
+      bubbleChart.call(bolha.g, {data: groupSkill,margins: bolha.margins})
+
+      w = parseInt(d3.select('#barchart').style('width')) * 0.9 ,
+      h = parseInt(d3.select('#barchart').style('width')) * 0.5;
+
+      //console.log('bar = ', parseInt(d3.select('#barchart').style('width')), parseInt(d3.select('#barchart').style('width')))
+
+      var bar = initVar.call(null, {id: '#barchart', titleDiv: "", class: '', width: w, height:h})    
+      
+      var groupJobs = group(data, ['JobClear'])
+      
+      
+      var x = d3.scaleBand().range([0,bar.margins.width]).padding(0.1),
+          //x = d3.scaleLinear().rangeRound([0,bar.margins.width]),
+          y = d3.scaleLinear().rangeRound([bar.margins.height,0])
+          //y = d3.scaleBand().range([bar.margins.height, 0]).padding(0.1);
+
+      groupJobs.sort(function(x,y){
+        return y.count - x.count;
+      })
+      groupJobs = groupJobs.slice(0,5)
+      //groupJobs.sort(function(x,y){      return x.count - y.count;    })
+      //barGraph2.call(g, {data: countType, axis: {x : x, y : y}, margins: vars,horizontal: true, setFill: true});
+
+      barChart.call(bar.g, {data: groupJobs, margins: bar, axis: {x : x, y : y},horizontal: false, setFill: true } )
+
+
+      var pie = initVar.call(null, {id: '#piechart', titleDiv: "", class: '', width: '300', height:'250'})    
+      
+      var arrayLang = []
+      data.map(function(x){      
+        x.language.split(' ').map(function(d){      
+          arrayLang.push({language:d})
+        })
+      })
+      var groupLang = group(arrayLang,['language'])
+      groupLang = groupLang.filter(function(x) {return x.value != "" })
+
+      pieChar.call(pie.g, {data: groupLang, margins: pie})
+
+
+      var pieEdu = initVar.call(null, {id: '#piecharttwo', titleDiv: "", class: '', width: '300', height:'250'})    
+
+      var arrayEdu = []
+      data.map(function(x){      
+        x.education.split(' ').map(function(d){      
+          arrayEdu.push({education:d})
+        })
+      })
+      var groupLang = group(arrayEdu,['education'])
+      groupLang = groupLang.filter(function(x) {return x.value != "" })
+
+      pieChar.call(pieEdu.g, {data: groupLang, margins: pieEdu})
+
+
+
+      //*-******************/
+      w = parseInt(d3.select('#treemap').style('width')) * 0.9,
+      h = parseInt(d3.select('#treemap').style('height')) * 12
+      var barCity = initVar.call(null, {id: '#treemap', titleDiv: "", class: 'treemap', width: w, height:h})    
+
+      var groupCity = group(data, ['cityClear'])
+      
+      
+      var x = d3.scaleBand().range([0,barCity.margins.width]).padding(0.1),//d3.scaleLinear().rangeRound([0,vars.margins.width]),
+          y = d3.scaleLinear().rangeRound([barCity.margins.height,0]);//d3.scaleBand().range([vars.margins.height, 0]).padding(0.1);
+
+      groupCity.sort(function(x,y){
+        return y.count - x.count;
+      })
+      groupCity = groupCity.filter(function(x) {return x.value != 'ND'}).slice(0,20)
+      //groupJobs.sort(function(x,y){      return x.count - y.count;    })
+      //barGraph2.call(g, {data: countType, axis: {x : x, y : y}, margins: vars,horizontal: true, setFill: true});
+
+      //barChart.call(barCity.g, {data: groupCity, margins: barCity, axis: {x : x, y : y},horizontal: false, setFill: true } )
+      treeMap.call(barCity.g, {data: groupCity, margins: barCity.margins})
+
+  //});
+
+  var parse = d3.timeParse("%d-%b-%y");
+  d3.tsv("data/data.tsv", function(d) {
+      d.value = parse(d.date);
+      d.count = +d.close;
+      return d;
+    }, function(error, data) {
+      if (error) throw error;
+      //console.log('TSV = ', data)
+
+      //lineChart.call(vars.g, {data:data, margins: vars.margins})
+  });
+  /************************************/
+
+  /******** GRAFICO DE BOLHAS ****************************/
+  //var bolha  = initVar.call(null, {id: '#row-1', titleDiv: "Bolhas", class: 'col-sm-6 borderDiv', width: '500', height:'500'})
+
+  d3.csv("data/data.csv", function(d) {
+    d.count = +d.count;
+    if (d.count) return d;
+  }, function(error, classes) {
+    if (error) throw error;
+    //  bolha.g.attr("text-anchor","middle").attr('font-family',"sans-serif").attr('font-size',"10")
+      //bubbleChart.call(bolha.g, {data: classes,margins: bolha.margins})
+  });
+  /************************************/
+
+  //var vars2 = initVar.call(null, {id: '#row-1', titleDiv: "Cloud", class: 'col-sm-6 borderDiv', width: '400', height:'250'})
+
+  /*
+
+  var format = d3.format(",d");
+
+  */
+  d3.csv("data/data.csv", function(d) {
+    d.value = +d.value;
+    if (d.value) return d;
+  }, function(error, classes) {
+    if (error) throw error;
+    
+    //console.log(classes)
+
+    
+
+  /*
+    var fill = d3.scaleOrdinal(d3.schemeCategory20c);
+    var xScale = d3.scaleLinear().domain([0, d3.max(classes, function(d){return d.value})]).range([0,width]);
+    var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+      
+    d3.layout.cloud()
+            .size([vars2.margins.width, vars2.margins.height])
+            .timeInterval(2)
+            .words(classes)
+            .fontSize(function(d) { return xScale(+d.value); })
+            .text(function(d) { return d.id; })
+            .rotate(function() { return ~~(Math.random() * 2) * 90; })          
+            .font("Impact")
+            .on("end", draw)
+            .start();
+     
+     var wordcloud = vars2.g.append("g")
+        .attr('class','wordcloud')
+        .attr("transform", "translate(" + vars2.margins.width/2 + "," + vars2.margins.height/2 + ")");
+        
+     vars2.g.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + vars2.margins.height + ")")
+        .selectAll('text')
+        .style('font-size','20px')
+        .style('fill',function(d) { return fill(d); })
+        .style('font','sans-serif');
+
+    function draw(words) {
+      //console.log(words)
+       wordcloud.selectAll("text")
+          .data(words)
+          .enter().append("text")
+          .attr('class','word')
+          .style("fill", function(d, i) { return fill(d.value); })
+          .style("font-size", function(d) { return d.size/2.5 + "px"; })
+          .style("font-family", function(d) { return d.font; })
+          .attr("text-anchor", "middle")
+          .attr("transform", function(d) {  return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")"; })
+          .text(function(d) { return d.text; });
+    }
+  */
+
+  });
+}
+
+//var scaleColor = d3.scaleSequential(d3["interpolateBlues"]).domain([0, d3.max(params.data, function(d) { return d.count; })]);
+  $("#sidenavToggler").click(function(e) {
+    e.preventDefault();
+    $("body").toggleClass("sidenav-toggled");
+    $(".navbar-sidenav .nav-link-collapse").addClass("collapsed");
+    $(".navbar-sidenav .sidenav-second-level, .navbar-sidenav .sidenav-third-level").removeClass("show");
+  });
+  $('.navbar-toggler').click(function(e){
+    var id = $(this).data("target")
+    $( id).addClass('show')
+    //console.log($(this).data("target"))
+  })
+</script>
+	</body>
+</html>

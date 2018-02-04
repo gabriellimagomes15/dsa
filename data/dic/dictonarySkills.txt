@@ -1,0 +1,368 @@
+algorithm
+angularjs
+artificial intelligence
+backpropagation
+bayes' theorem
+bayesian network
+bias
+big data
+binomial distribution
+chi-square test
+classification
+clustering
+coefficient
+computational linguistics
+confidence interval
+continuous variable
+correlation
+covariance
+cross-validation
+d3
+data engineer
+data mining
+data science
+data structure
+data wrangling
+decision trees
+deep learning
+dependent variable
+dimension reduction
+discrete variable
+econometrics
+feature
+feature engineering
+gate
+gradient boosting
+gradient descent
+histogram
+independent variable
+javascript
+k-means clustering
+k-nearest neighbors
+latent variable
+lift
+linear algebra
+linear regression
+logarithm
+logistic regression
+machine learning
+markov chain
+matlab
+matrix
+mean
+mean absolute error
+mean squared error
+median
+mode
+model
+monte carlo method
+moving average
+n-gram
+naive bayes classifier
+neural network
+normal distribution
+nosql
+null hypothesis
+objective function
+outlier
+overfitting
+p value
+pagerank
+pandas
+perceptron
+perl
+pivot table
+poisson distribution
+posterior distribution
+predictive analytics
+predictive modeling
+principal component analysis
+prior distribution
+probability distribution
+python
+quantile, quartile
+r
+random forest
+regression
+reinforcement learning
+root mean squared error
+ruby
+s curve
+sas
+scalar
+scripting
+serial correlation
+shell
+spatiotemporal data
+spss
+sql
+standard deviation
+standard normal distribution
+standardized score
+stata
+strata, stratified sampling
+supervised learning
+support vector machine
+t-distribution
+tableau
+time series data
+uima
+unsupervised learning
+variance
+vector
+vector space
+weka
+acid test
+aggregation
+algorithm
+anonymization
+artificial intelligence
+automatic identification and capture (aidc)
+avro
+behavioral analytics
+big data scientist
+business intelligence (bi)
+cascading
+ 
+call detail record (cdr) analysis
+cassandra
+cell phone data
+clickstream analytics
+classification analysis
+cloud computing
+clustering analysis
+cold data storage
+comparative analysis
+chukwa
+ 
+clojure
+cloud
+columnar database or column-oriented database
+comparators
+complex event processing (cep)
+confabulation
+cross-channel analytics
+data access
+dashboard
+data aggregation
+data architecture and design
+database
+database administrator (dba)
+database as a service (daas)
+database management system (dbms)
+data center
+data cleansing
+data collection
+data custodian
+data-directed decision making
+data exhaust
+data feed
+data governance
+data integration
+data integrity
+data mart
+data migration
+data mining
+data model, data modeling
+data point
+data profiling
+data quality
+data replication
+data repository
+data science
+data scientist
+data security
+data set
+data source
+data steward
+data structure
+data visualization
+data warehouse
+de-identification
+demographic data
+deep thunder
+distributed cache
+distributed object
+distributed processing
+distributed file system
+document store databases
+document management
+drill
+elasticsearch
+event analytics
+exabyte
+external data
+extract, transform, and load (etl)
+exploratory analysis
+failover
+flume
+grid computing
+graph databases
+hadoop
+hama
+hana
+hbase
+hcatalog 
+hdfs (hadoop distributed file system)
+hive
+hue
+impala
+in-database analytics
+in-memory database
+in-memory data grid (imdg)
+internet of things
+kafka
+key value stores
+keyvalue databases
+latency
+linked data
+load balancing
+location analytics
+location data
+log file
+machine-generated data
+machine2machine data
+machine learning
+mapreduce
+mashup
+mahout 
+metadata
+mongodb
+mpp database
+multi-dimensional databases
+multivalue databases
+network analysis
+newsql
+nosql
+object databases
+object-based image analysis
+online analytical processing (olap)
+online transactional processing (oltp)
+opendremel
+open data center alliance (odca)
+operational data store (ods)
+oozie 
+parallel data analysis
+parallel method invocation (pmi)
+parallel processing
+parallel query
+pattern recognition
+pentaho 
+petabyte
+pig
+predictive analytics
+predictive modeling
+public data
+query
+query analysis
+r
+re-identification
+real-time data
+recommendation engine
+reference data
+risk analysis
+root-cause analysis
+routing analysis
+scalability
+schema
+search data
+semi-structured data
+sentiment analysis
+server
+spatial analysis
+sql
+sqoop
+storm
+software as a service (saas)
+storage
+storm
+structured data
+structured query language (sql)
+text analytics
+text mining
+transactional data
+thrift
+unstructured data
+value
+volume
+visualization
+webhdfs apache hadoop
+weather data
+xml databases
+zookeeper
+r
+r
+python
+python
+java
+java
+c++
+c++
+ruby
+ruby
+julia
+julia
+perl
+perl
+matlab
+matlab
+mathematica
+mathematica
+php
+php
+javascript
+javascript
+scala
+scala
+octave
+octave
+excel
+excel
+tableau
+tableau
+d3.js
+d3.js
+sas
+sas
+spss
+spss
+d3
+d3
+spotfire
+spotfire
+stata
+stata
+hadoop
+hadoop
+mapreduce
+mapreduce
+spark
+spark
+pig
+pig
+hive
+hive
+shark
+shark
+oozie
+oozie
+zookeeper
+zookeeper
+flume
+flume
+mahout
+mahout
+azure
+azure
+aws
+aws
+sql
+sql
+nosql
+nosql
+hbase
+hbase
+cassandra
+cassandra
+mongodb
+mongodb

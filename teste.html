@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt">
+<head>
+	<meta charset="utf-8">
+	<script src="http://code.jquery.com/jquery-3.2.1.js"></script>
+  	<script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+  	<script type="text/javascript" src='js/d3.min.js'></script>
+<head>
+<body>
+    
+ <h1>TESTES </h1>	
+</body>
+            
+<script type="text/javascript">
+
+var expenses = [
+  {"age": 20,"name":"jim","amount":34,"date":"11/12/2015"},
+  {"age": 10,"name":"carl","amount":120.11,"date":"11/12/2015"},
+  {"age": 10,"name":"jim","amount":45,"date":"12/01/2015"},
+  {"age": 30,"name":"stacy","amount":12.00,"date":"01/04/2016"},
+  {"age": 20,"name":"stacy","amount":34.10,"date":"01/04/2016"},
+  {"age": 10,"name":"stacy","amount":44.80,"date":"01/05/2016"}
+];
+
+function groupMetric1(data, fieldGroup, fieldMetric){
+	var nest = d3.nest()
+				 .key( function(x) {return x[fieldGroup]} )
+				 .rollup(function(v) {
+							return {
+									count: v.length,
+									sum: d3.sum(v, function(d) { return d[fieldMetric]}),
+									avg: d3.mean(v, function(d) {return d[fieldMetric]}),
+									min: d3.min(v, function(d){ return d[fieldMetric]}),
+									max: d3.max(v, function(d){ return d[fieldMetric]})
+								} 
+						})
+				 .entries(data);
+	
+	nest = JSON.parse(JSON.stringify(nest).split('"value":').join('"count":'));//ALTERAR NOME DOS ATRIBUTOS DO JSON
+	nest = JSON.parse(JSON.stringify(nest).split('"key":').join('"value":')); //ALTERAR NOME DOS ATRIBUTOS DO JSON
+
+    return nest;
+}
+
+var g = groupMetric1(expenses, 'name', 'age')
+
+console.log(g)
+
+</script>
+</html>
