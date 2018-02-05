@@ -213,32 +213,37 @@
         <!--svg id='linechart' class="d"></svg> -->
         <div class="card-footer small text-muted">Updated in <span></span></div>
       </div>
-
+      <div class="row">
+          <div class="col-lg-6">
+            <div class="card mb-3">
+              <div class="card-header">
+                <i class="fa fa-circle"></i> Cons Comments</div>
+              <div id='bubblecons' class="card-body"></div>
+              <div class="card-footer small text-muted">Updated in <span></span></div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card mb-3">
+              <div class="card-header">
+                <i class="fa fa-circle"></i> Pros Comments</div>
+              <div id='bubblepros' class="card-body"></div>
+              <div class="card-footer small text-muted">Updated in <span></span></div>
+            </div>            
+          </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-bar-chart"></i> Total of Positions (top 10)</div>
+        <div id='pisitionchart' class="card-body"></div>
+        <div class="card-footer small text-muted">Updated in <span></span></div>
+      </div>
       <div class="row">
         <div class="col-lg-8">
           <!-- Example Bar Chart Card-->
-          <div class="card mb-3">
-            <div class="card-header">
-              <i class="fa fa-line-chart"></i> Jobs Vacancies by Date</div>
-            <div id='linechart' class="card-body">
-              <!--div class="row">
-                <div id='barchart' class="col-sm-8 my-auto"></div>
-                <div class="col-sm-4 text-center my-auto">
-                  <div class="h4 mb-0 text-primary">$34,693</div>
-                  <div class="small text-muted">YTD Revenue</div>
-                  <hr>
-                  <div class="h4 mb-0 text-warning">$18,474</div>
-                  <div class="small text-muted">YTD Expenses</div>
-                  <hr>
-                  <div class="h4 mb-0 text-success">$16,219</div>
-                  <div class="small text-muted">YTD Margin</div>
-                </div-->
-              </div>
-              <div class="card-footer small text-muted">Updated in <span></span></div>
-            </div>
+          
           
           <div class="card mb-3">
-            <div class="card-header"><i class="fa fa-trello"></i> Treemap of Jobs Vacancies by City</div>
+            <div class="card-header"><i class="fa fa-trello"></i> Treemap of Reviews  by City</div>
             <div id='treemap' class="card-body"></div>
             <div class="card-footer small text-muted">Updated in <span></span></div>
           </div>
@@ -257,18 +262,7 @@
             <div id='piechart' class="card-body"></div>
             <div class="card-footer small text-muted">Updated in <span></span></div>
           </div>
-          <div class="card mb-3">
-            <div class="card-header">
-              <i class="fa fa-pie-chart"></i> Education Requirements</div>
-            <div id='piecharttwo' class="card-body"></div>
-            <div class="card-footer small text-muted">Updated in <span></span></div>
-          </div>
-          <div class="card mb-3">
-            <div class="card-header">
-              <i class="fa fa-circle"></i> Tech Skills Requirements</div>
-            <div id='bubblechart' class="card-body"></div>
-            <div class="card-footer small text-muted">Updated in <span></span></div>
-          </div>
+
         </div>        
       </div>
     </div>
@@ -378,7 +372,7 @@ function charts(countrySelect){
   var format    = d3.format(",d"); 
 
 
-  d3.csv("data/reviewGlassD.csv", function(data) {
+  d3.csv("data/reviewGlassDClean.csv", function(data) {
       //console.log('da = ', d.dateClean)
       //d.dateClean = parseTime(d.dateClean);
       //d.count = +d.close;
@@ -489,6 +483,34 @@ function charts(countrySelect){
       //boxNumber2.call(div3, {docs: metricRating, title: "Cities"})
 
      
+      w = parseInt(d3.select('#pisitionchart').style('width')) * 0.9 ,
+      h = parseInt(d3.select('#pisitionchart').style('width')) * 0.25;
+
+      
+      var barPosition = initVar.call(null, {id: '#pisitionchart', titleDiv: "", class: '', width: w, height:h})    
+      
+      var x = d3.scaleBand().range([0,barPosition.margins.width]).padding(0.1),
+          //x = d3.scaleLinear().rangeRound([0,barPosition.margins.width]),
+          y = d3.scaleLinear().rangeRound([barPosition.margins.height,0])
+          //y = d3.scaleBand().range([barPosition.margins.height, 0]).padding(0.1);
+
+            
+      var groupPosit = group(data,['position'])
+      groupPosit = groupPosit.filter(function(x){ return x.value != ''})
+
+      
+      groupPosit.sort(function(x, y){        
+        return y.count - x.count;
+      })
+  
+      groupPosit = groupPosit.slice(0,10)
+      
+
+
+      barChart.call(barPosition.g, {data: groupPosit, margins: barPosition, axis: {x : x, y : y},horizontal: false, setFill: true } )  
+
+
+
       w = parseInt(d3.select('#barchart').style('width')) * 0.9 ,
       h = parseInt(d3.select('#barchart').style('width')) * 0.25;
 
@@ -513,8 +535,6 @@ function charts(countrySelect){
       })
 
       barChart.call(bar.g, {data: groupYear, margins: bar, axis: {x : x, y : y},horizontal: false, setFill: true } )
-
-      console.log(groupYear)
 
       var pieRecommend = initVar.call(null, {id: '#piechart', titleDiv: "", class: '', width: '300', height:'250'})    
       
@@ -544,6 +564,69 @@ function charts(countrySelect){
       //barChart.call(barCity.g, {data: groupCity, margins: barCity, axis: {x : x, y : y},horizontal: false, setFill: true } )
       treeMap.call(barCity.g, {data: groupCity, margins: barCity.margins})
 
+      w = parseInt(d3.select('#bubblepros').style('width')) * 0.9,
+      h = parseInt(d3.select('#bubblepros').style('height')) * 9
+
+      var bubPros = initVar.call(null, {id: '#bubblepros', titleDiv: "", class: '', width: w, height:h})
+
+      var arrayPros = []
+      data.map(function(x){
+        x.prosClean.split(' ').map(function(d){
+          //console.log(d)
+          arrayPros.push({pros:d})
+        })
+      })
+      var groupProsComents = group(arrayPros,['pros'])
+      groupProsComents = groupProsComents.filter(function(x) {return x.value != "" })
+      
+      
+      //groupProsComents = groupProsComents.filter(function(x){return x.count > 1500})
+      groupProsComents = groupProsComents.slice(0,250)
+      groupProsComents.sort(function(x,y){
+        return y.count - x.count
+      })
+
+
+      bubPros.margins.margin.bottom = 100;
+      bubPros.margins.margin.left = 30;
+
+      //console.log(bolha.margins);
+
+
+      bubPros.g.attr("text-anchor","middle").attr('font-family',"sans-serif").attr('font-size',"10")
+      bubbleChart.call(bubPros.g, {data: groupProsComents,margins: bubPros.margins, setColor: 'interpolateGreens'})
+
+      w = parseInt(d3.select('#bubblecons').style('width')) * 0.9,
+      h = parseInt(d3.select('#bubblecons').style('height')) * 9
+
+      var bubCons = initVar.call(null, {id: '#bubblecons', titleDiv: "", class: '', width: w, height:h})
+
+      var arrayCons = []
+      data.map(function(x){
+        x.consClean.split(' ').map(function(d){
+          //console.log(d)
+          arrayCons.push({pros:d})
+        })
+      })
+      var groupConsComents = group(arrayCons,['pros'])
+      groupConsComents = groupConsComents.filter(function(x) {return x.value != "" })
+      
+      
+      //groupProsComents = groupProsComents.filter(function(x){return x.count > 1500})
+      groupConsComents = groupConsComents.slice(0,250)
+      groupConsComents.sort(function(x,y){
+        return y.count - x.count
+      })
+
+
+      bubCons.margins.margin.bottom = 100;
+      bubCons.margins.margin.left = 30;
+
+      //console.log(bolha.margins);
+
+
+      bubCons.g.attr("text-anchor","middle").attr('font-family',"sans-serif").attr('font-size',"10")
+      bubbleChart.call(bubCons.g, {data: groupConsComents,margins: bubCons.margins, setColor: 'interpolateReds'})
 
 /*
       
@@ -584,37 +667,7 @@ function charts(countrySelect){
 
       lineChart.call(line.g, {data:groupDate, margins: line.margins})
 
-      w = parseInt(d3.select('#bubblechart').style('width')) * 0.9,
-      h = parseInt(d3.select('#bubblechart').style('height')) * 9
-
-      var bolha = initVar.call(null, {id: '#bubblechart', titleDiv: "", class: '', width: w, height:h})
-
-      var arraySkill = []
-      data.map(function(x){
-        x.skills.split(' ').map(function(d){
-          //console.log(d)
-          arraySkill.push({skill:d})
-        })
-      })
-      var groupSkill = group(arraySkill,['skill'])
-      groupSkill = groupSkill.filter(function(x) {return x.value != "" })
       
-      
-      groupSkill = groupSkill.filter(function(x){return x.count > 15})
-      groupSkill.sort(function(x,y){
-        return y.count - x.count
-      })
-
-
-      bolha.margins.margin.bottom = 100;
-      bolha.margins.margin.left = 30;
-
-      //console.log(bolha.margins);
-
-
-      bolha.g.attr("text-anchor","middle").attr('font-family',"sans-serif").attr('font-size',"10")
-      bubbleChart.call(bolha.g, {data: groupSkill,margins: bolha.margins})
-
 
 
 
@@ -636,95 +689,6 @@ function charts(countrySelect){
       //*-*****************
       
 */
-  });
-
-  var parse = d3.timeParse("%d-%b-%y");
-  d3.tsv("data/data.tsv", function(d) {
-      d.value = parse(d.date);
-      d.count = +d.close;
-      return d;
-    }, function(error, data) {
-      if (error) throw error;
-      //console.log('TSV = ', data)
-
-      //lineChart.call(vars.g, {data:data, margins: vars.margins})
-  });
-  /************************************/
-
-  /******** GRAFICO DE BOLHAS ****************************/
-  //var bolha  = initVar.call(null, {id: '#row-1', titleDiv: "Bolhas", class: 'col-sm-6 borderDiv', width: '500', height:'500'})
-
-  d3.csv("data/data.csv", function(d) {
-    d.count = +d.count;
-    if (d.count) return d;
-  }, function(error, classes) {
-    if (error) throw error;
-    //  bolha.g.attr("text-anchor","middle").attr('font-family',"sans-serif").attr('font-size',"10")
-      //bubbleChart.call(bolha.g, {data: classes,margins: bolha.margins})
-  });
-  /************************************/
-
-  //var vars2 = initVar.call(null, {id: '#row-1', titleDiv: "Cloud", class: 'col-sm-6 borderDiv', width: '400', height:'250'})
-
-  /*
-
-  var format = d3.format(",d");
-
-  */
-  d3.csv("data/data.csv", function(d) {
-    d.value = +d.value;
-    if (d.value) return d;
-  }, function(error, classes) {
-    if (error) throw error;
-    
-    //console.log(classes)
-
-    
-
-  /*
-    var fill = d3.scaleOrdinal(d3.schemeCategory20c);
-    var xScale = d3.scaleLinear().domain([0, d3.max(classes, function(d){return d.value})]).range([0,width]);
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
-
-      
-    d3.layout.cloud()
-            .size([vars2.margins.width, vars2.margins.height])
-            .timeInterval(2)
-            .words(classes)
-            .fontSize(function(d) { return xScale(+d.value); })
-            .text(function(d) { return d.id; })
-            .rotate(function() { return ~~(Math.random() * 2) * 90; })          
-            .font("Impact")
-            .on("end", draw)
-            .start();
-     
-     var wordcloud = vars2.g.append("g")
-        .attr('class','wordcloud')
-        .attr("transform", "translate(" + vars2.margins.width/2 + "," + vars2.margins.height/2 + ")");
-        
-     vars2.g.append("g")
-        .attr("class", "axis")
-        .attr("transform", "translate(0," + vars2.margins.height + ")")
-        .selectAll('text')
-        .style('font-size','20px')
-        .style('fill',function(d) { return fill(d); })
-        .style('font','sans-serif');
-
-    function draw(words) {
-      //console.log(words)
-       wordcloud.selectAll("text")
-          .data(words)
-          .enter().append("text")
-          .attr('class','word')
-          .style("fill", function(d, i) { return fill(d.value); })
-          .style("font-size", function(d) { return d.size/2.5 + "px"; })
-          .style("font-family", function(d) { return d.font; })
-          .attr("text-anchor", "middle")
-          .attr("transform", function(d) {  return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")"; })
-          .text(function(d) { return d.text; });
-    }
-  */
-
   });
 }
 

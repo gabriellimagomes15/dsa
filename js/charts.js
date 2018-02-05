@@ -471,7 +471,13 @@ function bubbleChart (params){
 	             .padding(1.5);
 
 	var color = d3.scaleOrdinal(d3.schemeCategory20c);
-	var scaleColor = d3.scaleSequential(d3["interpolateBlues"]).domain([0, d3.max(params.data, function(d) { return d.count; })]);
+	
+	console.log('bubble = ', params, params.hasOwnProperty("setColor"))
+	if(params.hasOwnProperty("setColor") && params.setColor != ''){
+		var scaleColor = d3.scaleSequential(d3[params.setColor]).domain([0, d3.max(params.data, function(d) { return d.count; })]);
+	}else{
+		var scaleColor = d3.scaleSequential(d3["interpolateBlues"]).domain([0, d3.max(params.data, function(d) { return d.count; })]);
+	}
 	var opacity = 0.55,
 		opacityHover = 1;
 	

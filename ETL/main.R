@@ -1,15 +1,20 @@
 #path <- 'E:/Curso Cientista de Dados/Projeto Final/analysisFacebook/jobsAnalysis'
 #path <- 'E:/jobsAnalysis'
-path <- 'C:/Users/gabri/Desktop/jobsAnalysis'
-setwd(path)
-source(paste(path,'/ETL/utils.R', sep = '') )
-source(paste(path,'/ETL/dataMining.R', sep = '') )
+
+# https://www.portalsql.com.br/vagas.php
+# 
+
+i <- 2
+path <- c('C:/Users/gabri/Desktop/jobsAnalysis','~/Documents/jobsAnalysis/','E:/Curso Cientista de Dados/Projeto Final/analysisFacebook/jobsAnalysis')
+setwd(path[i])
+source(paste(path[i],'/ETL/utils.R', sep = '') )
+source(paste(path[i],'/ETL/dataMining.R', sep = '') )
 #source(paste(path,'/ETL/dataMining.R', sep = '') )
 
 
 
 
-#### **** COLECT DATA **** ####
+#### **** JOBS VACANCIES **** ####
 collect <- function(url = ''){
   if(url == ''){
     stop('Informe uma url para fazer scrapping')
@@ -17,6 +22,83 @@ collect <- function(url = ''){
     dados <- scrapGlassDoor(urls = url)
     fwrite(dados,paste('data/jobsGlassDoor',Sys.Date(),'.csv', sep = '') ) 
   }
+}
+
+jobsGlassDoor <- function(){
+  urlRoot <- 'https://www.glassdoor.com'
+  urls    <- c('https://www.glassdoor.com/Job/canada-data-scientist-jobs-SRCH_IL.0,6_IN3_KO7,21_IP','https://www.glassdoor.com/Job/us-data-scientist-jobs-SRCH_IL.0,2_IN1_KO3,17_IP')
+  
+  ## Loop para identificar aumtomaticamente o pa?s 
+  country <- sapply(urls, function(x){
+    final <- gregexpr('-',x)[[1]][1] - 1
+    x <- substr(x,31,final)
+    x
+  })
+  
+  urlDF   <- data.frame(urls, country, stringsAsFactors = F)
+  dataDF  <- data.frame()
+  
+  for(i in 1:dim(urlDF)[1]){
+    urlPage <- urlDF$urls[i]
+    
+    ## LENDO P?GINA E IDENTIFICANDO QUANTOS REGISTROS EXISTEM PARA IDENTIFICAR AUTOMATICAMENTE A QUANTIDADE DE PAGINAS QUE SER?O LIDAS
+    
+    urlPage2 <- paste(urlPage,'1','.htm', sep = '')
+    page     <- read_html(urlPage2)
+    totalReg <- as.integer(page %>% html_nodes('.jobsCount') %>% html_text() %>% gsub('[[:alpha:]]|\\s|[[:punct:]]','', .)) 
+    
+    if(!identical(totalReg,integer(0) ) & !is.na(totalReg) ){
+      totalPages <- (round(totalReg/30))
+    }else{
+      totalPages <- 10
+    }
+    cat('Total Pages = ', totalPages,  ' - ', urlPage, '\n\n')
+    
+    tryCatch({
+      ## FOR PARA LER AS P?GINAS COM TODOS AS VAGAS...TO READ THE PAGES WITH ALL JOB POST. TotalPages+1 is because the first page doesn't work with this url
+      for( pag in 1:totalPages){
+        cat('\n == > Page = ', pag)
+        urlPage2 <- paste(urlPage,pag,'.htm', sep = '')
+        cat(' ',urlPage2)
+        page     <- read_html(urlPage2)
+        links    <- page %>% html_nodes('.jlGrid.hover') %>% html_nodes('.jl .flexbox a') %>% html_attr('href')
+        
+        tryCatch({    
+          ## FOR PARA LER A P?GINA COM TODOS OS DETALHES DA VAGA
+          for(href in links){
+            url <- paste(urlRoot, href, sep = '')
+            cat('\n \t --', url, '\t')
+            
+            pageJob <- read_html(url)
+            
+            id <- pageJob %>% html_nodes('.jobViewHeader') %>% html_attr('id')
+            id <- ifelse(identical(id,character(0)), '--', id)
+            
+            data <- scrapJobsVac(pageJob = page, tagId = ,tagPosit = '.empInfo.tbl h2',tagCompany = '.empInfo .ib',
+                                 tagCityState = '.empInfo .subtle.ib',tagDate = '.empLinks .minor',
+                                 tagDescrip = '.jobDescriptionContent', country = urlDF$country[i], url = url)
+            
+            dataDF <- rbind.fill(dataDF,data)
+            
+            print('Saving data set')
+            #fwrite(dataDF, paste('data/Glassdoor',Sys.Date(),'.csv', sep = '') )
+            fwrite(dataDF, paste('data/glassDoor',urlDF$country[i],Sys.Date(),'.csv',sep = '') )
+            
+            Sys.sleep(4) # DELAY
+          }## END FOR LINKS
+        }, error = function(e){
+          print(paste('ERROR READ LINKS: ', e , sep = ' ') )
+        })
+      }## END FOR TOTALPAGE
+    }, error = function(e){
+      print(paste('ERROR: ', e , sep = ' ') )
+    })
+  }## END FOR URLPAGE
+  return(dataDF)
+}
+
+jobsLoveM <- function(){
+  
 }
 
 #### **** PRE-PROCESS DATA **** ####
@@ -47,7 +129,7 @@ preProcess <- function(dados){
   dadosClean              <- clearDate(data = dadosClean)
   
   ## GET THE PROVINCE OF THE CANADA
-  ## CAPTURANDO A PROVINCIAS DAS CIDADES DO CANADA. É NECESSÁRIO PORQUE NO ANUNCIO DA VAGA SÓ VEM SOMENTE A CIDADE
+  ## CAPTURANDO A PROVINCIAS DAS CIDADES DO CANADA. ? NECESS?RIO PORQUE NO ANUNCIO DA VAGA S? VEM SOMENTE A CIDADE
   canadaCity           <- data.frame(jsonlite::fromJSON('data/cities/canadaCities.json'), stringsAsFactors = F)
   colnames(canadaCity) <- c('city','prov')
   
@@ -81,7 +163,7 @@ preProcess <- function(dados){
   return(dadosClean)
 }
 
-
+#### **** COMPANIES REVIEWS *****####
 collectReviews <- function(){
   urls <- c('https://www.glassdoor.com/Reviews/Microsoft-Reviews-E1651_P','https://www.glassdoor.com/Reviews/IBM-Reviews-E354_P',
             'https://www.glassdoor.com/Reviews/Amazon-Reviews-E6036_P') #2.htm'
@@ -110,7 +192,7 @@ reviewsLoveMondays <- function(){
       webPage  <- read_html(paste(urlPage,'1',sep = '') )
       company  <- webPage %>% html_nodes('.lm-CompanyHeader-companyName') %>% html_text()
       
-      ## RECUPERANDO O TOTAL DE AVALIAÇÕES
+      ## RECUPERANDO O TOTAL DE AVALIA??ES
       totalRew   <- as.numeric(webPage %>% html_nodes('.lm-Tabs-default--companyHeader .lm-Tabs-default-item.is-active') %>% html_text() %>% gsub('[[:alpha:]]|\\s|[[:punct:]]','', .))
       if(!identical(totalRew,numeric(0)) & !is.na(totalRew) ){
         totalPages <- round(totalRew/10)  
@@ -181,10 +263,10 @@ reviewsGlassDoor <- function(){
           webPage <- read_html(urlPage2) ## SCRAPPING THE PAGE
           nodes   <- webPage %>% html_nodes('.empReview') ## GET NODES THAT CONTAIN THE REVIEWS
           
-          ## RECUPERANDO OS IDS DAS AVALIAÇÕES
+          ## RECUPERANDO OS IDS DAS AVALIA??ES
           ids <- nodes %>% html_attr('id') %>% gsub('[[:alpha:]]|\\s|[[:punct:]]','', .) #html_attr('id') 
           
-          ## RECUPERANDO RATING DAS AVALIAÇÕES
+          ## RECUPERANDO RATING DAS AVALIA??ES
           ratings <- nodes %>% html_nodes('.rating span') %>% html_attr('title') %>% gsub('[[:alpha:]]|\\s|[[:punct:]]','', .) %>% as.numeric(.) / 10
           
           reviewGlassDoor <- scrapReviews(nodes = nodes,tagDate = '.date', tagTitle = '.tbl .h2.summary',
@@ -203,7 +285,7 @@ reviewsGlassDoor <- function(){
   }## END FOR urls
 }
 
-## FUNÇÃO PARA FAZER PRE-PROCESSAMENTO DA AVALIAÇÕES DO SITE LOVE MONDAYS
+## FUN??O PARA FAZER PRE-PROCESSAMENTO DA AVALIA??ES DO SITE LOVE MONDAYS
 transLoveMond <- function(){
   dados <- data.table::fread('data/reviewLoveM-2018-01-28.csv',encoding = 'UTF-8')
   dadosClean <- convertDate(dados)
@@ -225,12 +307,12 @@ transLoveMond <- function(){
       x
     }
   })
-  dadosClean$pros <- gsub('Prós:','',dadosClean$pros)#sapply(dadosClean$pros, function)
+  dadosClean$pros <- gsub('Pr?s:','',dadosClean$pros)#sapply(dadosClean$pros, function)
   dadosClean$cons <- gsub('Contras:','',dadosClean$cons)#sapply(dadosClean$pros, function)
-  dadosClean$adviceManag <- gsub('Conselhos para presidência:','',dadosClean$cons)
+  dadosClean$adviceManag <- gsub('Conselhos para presid?ncia:','',dadosClean$cons)
   
   dadosClean$position <- sapply(dadosClean$status,function(x){
-    fim <- gregexpr('Ex-funcionário',x)[[1]]-1
+    fim <- gregexpr('Ex-funcion?rio',x)[[1]]-1
     if(fim > 0){
       x <- substr(x,0,fim)
       x <- ifelse(x == '','NI',x)
@@ -239,10 +321,10 @@ transLoveMond <- function(){
   })
   
   dadosClean$status <- sapply(dadosClean$status,function(x){
-    if(grepl('Ex-funcionário|saiu',x)){
-      x <- 'Ex-funcionário'
+    if(grepl('Ex-funcion?rio|saiu',x)){
+      x <- 'Ex-funcion?rio'
     }else{
-      x <- 'Funcionário'
+      x <- 'Funcion?rio'
     }
     x
   })
@@ -252,7 +334,7 @@ transLoveMond <- function(){
   fwrite(dadosClean,'data/reviewLoveM.csv')
 }
 
-## FUNÇÃO PARA FAZER PRE-PROCESSAMENTO DA AVALIAÇÕES DO SITE GLASSDOOR
+## FUN??O PARA FAZER PRE-PROCESSAMENTO DA AVALIA??ES DO SITE GLASSDOOR
 transGlassDoor <- function(){
   dados <- fread('data/reviewGlassD-2018-01-29.csv',encoding = 'UTF-8')
   dados$date <- sapply(dados$date, function(x){
@@ -327,8 +409,8 @@ transGlassDoor <- function(){
 #clusterDM()
 
 #### >>>> COMPANIES' REVIEWS  ####
-reviewsLoveMondays() ## SCRAPPING AVALIAÇÕES NO SITE LOVE MONDAYS
-reviewsGlassDoor() ## SCRAPPING AVALIAÇÕES NO GLASSDOOR
-transGlassDoor() ## TRANSFORMAÇÕES AVALIAÇÕES DO SITE GLASSDOOR
-transLoveMond() ## TRANSFORMAÇÕES AVALIAÇÕES DO SITE LOVE MONDAYS
+reviewsLoveMondays() ## SCRAPPING AVALIA??ES NO SITE LOVE MONDAYS
+reviewsGlassDoor() ## SCRAPPING AVALIA??ES NO GLASSDOOR
+transGlassDoor() ## TRANSFORMA??ES AVALIA??ES DO SITE GLASSDOOR
+transLoveMond() ## TRANSFORMA??ES AVALIA??ES DO SITE LOVE MONDAYS
 
