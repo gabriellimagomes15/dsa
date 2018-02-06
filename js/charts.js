@@ -247,6 +247,8 @@ function pieChar(params){
 	//var radius = Math.min(width-padding, height-padding) / 2;
 	var radius = Math.min(width, height) / 1.8;
 	var color  = d3.scaleOrdinal(d3.schemeCategory10);
+		var scaleColor = d3.scaleSequential(d3["interpolateBlues"])
+					   .domain([0, d3.max(data, function(d) { return d.count; })]);
 
 	this.attr('transform', 'translate(' + (width/2.5) + ',' + (height/1.5) + ')')
 
@@ -269,7 +271,7 @@ function pieChar(params){
 		.append("g")
 		.append('path')
 		.classed("pie", true)
-		.attr('fill', function(d, i){ return color(d.data.value);} )
+		.attr('fill', function(d, i){ return color(d.data.count);} )
 		.transition()
 		.delay(function(d,i){
 			return i * delay;
@@ -341,7 +343,7 @@ function pieChar(params){
 		.duration(duration)
 		.attr('width', legendRectSize)                          
 		.attr('height', legendRectSize)                         
-		.style('fill', function(d) { return color(d.value); })
+		.style('fill', function(d) { return color(d.count); })
 		//.style('stroke', color);
 
     legend.append('text')
@@ -628,8 +630,10 @@ function treeMap(params){
   var fader = function(color) { return d3.interpolateRgb(color, "#fff")(0.2); },
       color = d3.scaleOrdinal(d3.schemeCategory20.map(fader)),
       format = d3.format(",d");
-   	var scaleColor = d3.scaleSequential(d3["interpolateGnBu"])
-			   		   .domain([0, d3.max(data, function(d) { return d.count; })]);
+   	
+	var scaleColor = d3.scaleSequential(d3["interpolateBlues"])
+					   .domain([0, d3.max(params.data, function(d) { return d.count; })]);
+
 
   var treemap = d3.treemap()
       .tile(d3.treemapResquarify)
