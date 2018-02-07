@@ -37,7 +37,7 @@ jobsGlassDoor <- function(){
   
   urlDF   <- data.frame(urls, country, stringsAsFactors = F)
   dataDF  <- data.frame()
-  
+  i <- 1
   for(i in 1:dim(urlDF)[1]){
     urlPage <- urlDF$urls[i]
     
@@ -74,7 +74,7 @@ jobsGlassDoor <- function(){
             id <- pageJob %>% html_nodes('.jobViewHeader') %>% html_attr('id')
             id <- ifelse(identical(id,character(0)), '--', id)
             
-            data <- scrapJobsVac(pageJob = page, tagId = ,tagPosit = '.empInfo.tbl h2',tagCompany = '.empInfo .ib',
+            data <- scrapJobsVac(pageJob = page, id = id,tagPosit = '.empInfo.tbl h2',tagCompany = '.empInfo .ib',
                                  tagCityState = '.empInfo .subtle.ib',tagDate = '.empLinks .minor',
                                  tagDescrip = '.jobDescriptionContent', country = urlDF$country[i], url = url)
             
@@ -98,7 +98,108 @@ jobsGlassDoor <- function(){
 }
 
 jobsLoveM <- function(){
+  urlRoot <- 'https://www.lovemondays.com.br'
+  urls    <- c('https://www.lovemondays.com.br/pesquisa/vaga/pagina/1?external_job_city_id=&external_job_city_name=&q=Data+Analyst')
+  country <- c('Brazil')
+  urlDF   <- data.frame(urls, country, stringsAsFactors = F)
+  dataDF  <- data.frame()
   
+  for(i in 1:dim(urlDF)[1]){
+    urlPage <- urlDF$urls[i]
+    
+    ## LENDO P?GINA E IDENTIFICANDO QUANTOS REGISTROS EXISTEM PARA IDENTIFICAR AUTOMATICAMENTE A QUANTIDADE DE PAGINAS QUE SER?O LIDAS
+     
+    totalPages <- page %>% html_nodes('.lm-Pagination-list-item.is-last a') %>% html_attr('href') %>% 
+                            gsub('[[:alpha:]]|\\s|[[:punct:]]','', .) %>% as.numeric(.)
+    
+    if(!identical(totalPages,integer(0) ) & !is.na(totalReg) ){
+      totalPages <- 5
+    }
+    
+    cat('Total Pages = ', totalPages,  ' - ', urlPage, '\n\n')
+    
+    pag <- as.character(2)
+    
+    
+    tryCatch({
+      ## FOR PARA LER AS P?GINAS COM TODOS AS VAGAS...TO READ THE PAGES WITH ALL JOB POST. TotalPages+1 is because the first page doesn't work with this url
+      for( pag in 1:totalPages){
+        cat('\n == > Page = ', pag)
+        urlPage2 <- str_replace(url, '[[:digit:]]',as.character(pag) ) #paste(urlPage,pag,'.htm', sep = '')
+        cat(' ',urlPage2)
+        page     <- read_html(urlPage2)
+        links    <- page %>% html_nodes('.lm-List-default-row.lm-List-jobs-row a') %>% html_attr('href')
+        
+        tryCatch({    
+          
+          href <- links[1]
+          ## FOR PARA LER A P?GINA COM TODOS OS DETALHES DA VAGA
+          for(href in links){
+            url <- paste(urlRoot, href, sep = '')
+            cat('\n \t --', url, '\t')
+            
+            pageJob <- read_html(url)
+            
+            ## Bloco para recuperar o ID da vaga
+            textId <- pageJob %>% html_nodes('title') %>% html_text() %>% trimws(.)
+            iniId <- regexpr("#",textId)[[1]] + 1
+            fimId <- regexpr("[[:digit:]]\\)",textId)
+            
+            stringr::str_extract(string = textId, pattern = "#[[:digit:]]+")
+            
+            
+            
+            id <- substr(textId,iniId,fimId)
+            id <- ifelse(identical(id,character(0)), '--', id)
+            
+            ' html_innerHTML <- function(x, css, xpath) {
+            file <- tempfile()
+              html_node(x,css) %>% write_xml(file)
+              txt <- readLines(file, warn=FALSE)
+              unlink(file)
+              txt
+            }
+            rm(html_innerHTML)
+            html_innerHTML(pageJob, "header section h1") %>% 
+            gsub("<br>"," \n ", .) %>% .[2]
+            read_html %>%
+            html_text
+            xml_
+            #posit, company
+            pageJob %>% html_nodes'
+            #('.lm-Typography-titleFour') %>% gsub("<br>"," \n ", .) %>% html_text() %>% xml_find_all(., "//text()")
+            
+            
+            t <- pageJob %>% html_nodes("[type='application/ld+json']") %>% html_text()
+            d <- t[which(grepl("datePosted",t))]
+            stringr::str_extract(string = d,pattern = "[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}")
+            
+            ## Comando para recuperar o cargo (position), nome da empresa e localização (location).
+             # Foi necessário adotar essa estratégia por causa da estrutura da página.
+            infos <- pageJob %>% html_nodes('header section h1') %>% gsub("<br>"," \n", .) %>% str_split(.,'\n|em')
+            
+            data <- scrapJobsVac(pageJob = pageJob, id = id,tagPosit = '.empInfo.tbl h2',tagCompany = '.empInfo .ib',
+                                 tagCityState = '.empInfo .subtle.ib',tagDate = '.empLinks .minor',
+                                 tagDescrip = '.jobDescriptionContent', country = urlDF$country[i], url = url)
+            
+            
+            dataDF <- rbind.fill(dataDF,data)
+            
+            print('Saving data set')
+            #fwrite(dataDF, paste('data/Glassdoor',Sys.Date(),'.csv', sep = '') )
+            fwrite(dataDF, paste('data/glassDoor',urlDF$country[i],Sys.Date(),'.csv',sep = '') )
+            
+            Sys.sleep(4) # DELAY
+          }## END FOR LINKS
+        }, error = function(e){
+          print(paste('ERROR READ LINKS: ', e , sep = ' ') )
+        })
+      }## END FOR TOTALPAGE
+    }, error = function(e){
+      print(paste('ERROR: ', e , sep = ' ') )
+    })
+  }## END FOR URLPAGE
+  return(dataDF)
 }
 
 #### **** PRE-PROCESS DATA **** ####
