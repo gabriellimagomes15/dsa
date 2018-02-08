@@ -104,19 +104,19 @@ scrapJobsVac <- function(pageJob = '', id = 'ni', tagPosit= 'ni', tagCompany= 'n
   #id <- pageJob %>% html_nodes('.jobViewHeader') %>% html_attr('id')
   #id <- ifelse(identical(id,character(0)), '--', id)
   
-  positJob   <- pageJob %>% html_nodes('.empInfo.tbl h2') %>% html_text()
+  positJob   <- pageJob %>% html_nodes(tagPosit) %>% html_text()
   positJob   <- ifelse(identical(positJob,character(0)), 'NI', positJob)
   
-  company    <- pageJob %>% html_nodes('.empInfo .ib') %>% html_text() %>% .[1]
+  company    <- pageJob %>% html_nodes(tagCompany) %>% html_text() %>% .[1]
   company    <- ifelse(is.na(company) , 'NI', company)
   
-  city_state <- pageJob %>% html_nodes('.empInfo .subtle.ib') %>% html_text()
+  city_state <- pageJob %>% html_nodes(tagCityState) %>% html_text()
   city_state <- ifelse(identical(city_state,character(0)), 'NI', city_state)
   
-  date <- pageJob %>% html_nodes('.empLinks .minor') %>% html_text()
+  date <- pageJob %>% html_nodes(tagDate) %>% html_text()
   date <- ifelse(identical(date,character(0)), 'NI', date)
   
-  descrip <- pageJob %>% html_nodes('.jobDescriptionContent') %>% html_text()
+  descrip <- pageJob %>% html_nodes(tagDescrip) %>% html_text()
   descrip <- ifelse(identical(descrip,character(0)), 'NI', descrip)
   
   dateColect <- Sys.Date()
