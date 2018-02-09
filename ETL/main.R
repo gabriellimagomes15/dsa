@@ -5,13 +5,11 @@
 # 
 
 i <- 2
-path <- c('C:/Users/gabri/Desktop/jobsAnalysis','~/Documents/jobsAnalysis/','E:/Curso Cientista de Dados/Projeto Final/analysisFacebook/jobsAnalysis')
+path <- c('C:/Users/gabri/Desktop/jobsAnalysis','~/Documents/dsa/','E:/Curso Cientista de Dados/Projeto Final/analysisFacebook/jobsAnalysis')
 setwd(path[i])
 source(paste(path[i],'/ETL/utils.R', sep = '') )
 source(paste(path[i],'/ETL/dataMining.R', sep = '') )
 #source(paste(path,'/ETL/dataMining.R', sep = '') )
-
-
 
 
 #### **** JOBS VACANCIES **** ####
@@ -37,7 +35,6 @@ jobsGlassDoor <- function(){
   
   urlDF   <- data.frame(urls, country, stringsAsFactors = F)
   dataDF  <- data.frame()
-  
   for(i in 1:dim(urlDF)[1]){
     urlPage <- urlDF$urls[i]
     
@@ -72,9 +69,9 @@ jobsGlassDoor <- function(){
             pageJob <- read_html(url)
             
             id <- pageJob %>% html_nodes('.jobViewHeader') %>% html_attr('id')
-            id <- ifelse(identical(id,character(0)), '--', id)
+            id <- ifelse(identical(id,character(0)), 'ni', id)
             
-            data <- scrapJobsVac(pageJob = page, tagId = ,tagPosit = '.empInfo.tbl h2',tagCompany = '.empInfo .ib',
+            data <- scrapJobsVac(pageJob = pageJob, id = id,tagPosit = '.empInfo.tbl h2',tagCompany = '.empInfo .ib',
                                  tagCityState = '.empInfo .subtle.ib',tagDate = '.empLinks .minor',
                                  tagDescrip = '.jobDescriptionContent', country = urlDF$country[i], url = url)
             
@@ -98,8 +95,197 @@ jobsGlassDoor <- function(){
 }
 
 jobsLoveM <- function(){
+  urlRoot <- 'https://www.lovemondays.com.br'
+  urls    <- c('https://www.lovemondays.com.br/pesquisa/vaga/pagina/1?external_job_city_id=&external_job_city_name=&q=Data+Analyst')
+  country <- c('Brasil')
+  urlDF   <- data.frame(urls, country, stringsAsFactors = F)
+  dataDF  <- data.frame()
   
+  for(i in 1:dim(urlDF)[1]){
+    urlPage <- urlDF$urls[i]
+    
+    ## LENDO P?GINA E IDENTIFICANDO QUANTOS REGISTROS EXISTEM PARA IDENTIFICAR AUTOMATICAMENTE A QUANTIDADE DE PAGINAS QUE SER?O LIDAS
+    page <- read_html(urlPage) 
+    totalPages <- page %>% html_nodes('.lm-Pagination-list-item.is-last a') %>% html_attr('href') %>% 
+                            gsub('[[:alpha:]]|\\s|[[:punct:]]','', .) %>% as.numeric(.)
+    print(totalPages)
+    if(identical(totalPages,integer(0) ) | is.na(totalPages) ){
+      totalPages <- 5
+    }
+    cat('Total Pages = ', totalPages,  ' - ', urlPage, '\n\n')
+    
+    tryCatch({
+      ## FOR PARA LER AS P?GINAS COM TODOS AS VAGAS...TO READ THE PAGES WITH ALL JOB POST. TotalPages+1 is because the first page doesn't work with this url
+      for( pag in 1:totalPages){
+        cat('\n == > Page = ', pag)
+        urlPage2 <- str_replace(urlPage, '[[:digit:]]',as.character(pag) ) #paste(urlPage,pag,'.htm', sep = '')
+        cat(' ',urlPage2)
+        page     <- read_html(urlPage2)
+        links    <- page %>% html_nodes('.lm-List-default-row.lm-List-jobs-row a') %>% html_attr('href')
+        
+        tryCatch({    
+          ## FOR PARA LER A P?GINA COM TODOS OS DETALHES DA VAGA
+          for(href in links){
+            url <- paste(urlRoot, href, sep = '')
+            cat('\n \t --', url, '\t')
+            
+            pageJob <- read_html(url)
+            
+            ## Bloco para recuperar o ID da vaga
+            textId <- pageJob %>% html_nodes('title') %>% html_text() %>% trimws(.)
+            #iniId <- regexpr("#",textId)[[1]] + 1
+            #fimId <- regexpr("[[:digit:]]\\)",textId)
+            
+            idJob <- stringr::str_extract(string = textId, pattern = "#[[:digit:]]+")
+            
+            #idJob <- substr(textId,iniId,fimId)
+            #idJob <- ifelse(identical(idJob,character(0)), '--', id)
+            
+            ' html_innerHTML <- function(x, css, xpath) {
+            file <- tempfile()
+              html_node(x,css) %>% write_xml(file)
+              txt <- readLines(file, warn=FALSE)
+              unlink(file)
+              txt
+            }
+            rm(html_innerHTML)
+            html_innerHTML(pageJob, "header section h1") %>% 
+            gsub("<br>"," \n ", .) %>% .[2]
+            read_html %>%
+            html_text
+            xml_
+            #posit, company
+            pageJob %>% html_nodes'
+            #('.lm-Typography-titleFour') %>% gsub("<br>"," \n ", .) %>% html_text() %>% xml_find_all(., "//text()")
+            
+            ## BLOCO PARA RECUPERAR O CARGO, NOME DA EMPRESA E LOCALIZAÇÃO
+            header <- pageJob %>% html_nodes('header section h1') %>% gsub("<br>"," \n", .) %>% str_split(.,'\n|em')
+            
+            
+            ## BLOCO PARA RECUPERAR A DATA DE POSTAGEM DA VAGA
+            json <- pageJob %>% html_nodes("[type='application/ld+json']") %>% html_text()
+            d    <- json[which(grepl("datePosted",json))]
+            date <- stringr::str_extract(string = d,pattern = "[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}")
+            
+            ## Comando para recuperar o cargo (position), nome da empresa e localização (location).
+             # Foi necessário adotar essa estratégia por causa da estrutura da página.
+            infos <- pageJob %>% html_nodes('header section h1') %>% gsub("<br>"," \n", .) %>% str_split(.,'\n|em')
+            
+            data <- scrapJobsVac(pageJob = pageJob,id = idJob, tagDescrip = ".company-job-description", 
+                                 country = urlDF$country[i], url = url)
+            
+            ## INSERINDO NO DF OS VALORES EXTRIDOS FORA DA FUNÇÃO scrapJobsVac
+            data$date       <- date
+            data$positJob   <- header[[1]][2]
+            data$company    <- header[[1]][3]
+            data$city_state <- header[[1]][4]
+            
+            dataDF <- rbind.fill(dataDF,data)
+            
+            cat('\n Saving data set in data/jobsLM')
+            #fwrite(dataDF, paste('data/Glassdoor',Sys.Date(),'.csv', sep = '') )
+            fwrite(dataDF, paste('data/jobsLM',urlDF$country[i],Sys.Date(),'.csv',sep = '') )
+            
+            Sys.sleep(4) # DELAY
+          }## END FOR LINKS
+        }, error = function(e){
+          print(paste('ERROR READ LINKS: ', e , sep = ' ') )
+        })
+      }## END FOR TOTALPAGE
+    }, error = function(e){
+      print(paste('ERROR: ', e , sep = ' ') )
+    })
+  }## END FOR URLPAGE
+  return(dataDF)
 }
+
+jobsIndeed <- function(){
+  urlRoot <- 'https://www.indeed.com.br/viewjob'
+  urls    <- c('https://www.indeed.com.br/empregos?q=data+scientist&l=Brasil&start=',
+               'https://www.indeed.com.br/empregos?q=cientista+de+dados&l=Brasil&start=')
+  
+  ## Loop para identificar aumtomaticamente o pa?s 
+  country <- sapply(urls, function(x){
+    ini   <- gregexpr('l=',x)[[1]][1] + 2
+    final <- gregexpr('&start',x)[[1]][1] - 1
+    x <- substr(x,ini,final)
+    x
+  })
+  
+  urlDF   <- data.frame(urls, country, stringsAsFactors = F)
+  dataDF  <- data.frame()
+  
+  for(i in 1:dim(urlDF)[1]){
+    urlPage <- urlDF$urls[i]
+  
+    ## LENDO P?GINA E IDENTIFICANDO QUANTOS REGISTROS EXISTEM PARA IDENTIFICAR AUTOMATICAMENTE A QUANTIDADE DE PAGINAS QUE SER?O LIDAS
+    urlPage2 <- paste(urlPage,'0', sep = '')
+    page     <- read_html(urlPage2)
+    
+    totalReg <- page %>% html_nodes('#searchCount') %>% html_text() %>% stringr::str_extract(., "de [[:digit:]]+") %>% 
+                  stringr::str_extract(.,"[[:digit:]]+") %>% as.numeric(.)
+    
+    if(!identical(totalReg,integer(0) ) & !is.na(totalReg) ){
+      totalPages <- (round(totalReg/10))
+    }else{
+      totalPages <- 5
+    }
+    cat('Total Pages = ', totalPages,  ' - ', urlPage, '\n\n')
+    
+    tryCatch({
+      ## FOR PARA LER AS P?GINAS COM TODOS AS VAGAS...TO READ THE PAGES WITH ALL JOB POST. TotalPages+1 is because the first page doesn't work with this url
+      for( pag in 0:totalPages){
+        cat('\n == > Page = ', pag)
+        urlPage2 <- paste(urlPage,pag*10, sep = '')
+        cat(' ',urlPage2)
+        
+        page  <- read_html(urlPage2)
+        links <- page %>% html_nodes('.row.result h2 a') %>% html_attr("href")
+        
+        tryCatch({    
+          ## FOR PARA LER A P?GINA COM TODOS OS DETALHES DA VAGA
+          for(href in links){
+            sufixo  <- substr(href, regexpr('\\?',href), str_length(href))
+            url  <- paste(urlRoot,sufixo, sep = '')
+            
+            #url <- paste(urlRoot, href, sep = '')
+            cat('\n \t --', url, '\t')
+            
+            pageJob <- read_html(url)
+            
+            idJob <- stringr::str_extract(url,"jk=\\w+")
+            idJob <- ifelse(idJob == "", 'ni', idJob)
+            
+            #pageJob %>% html_nodes('[data-tn-component="jobHeader"] .jobtitle') %>% html_text()
+            #pageJob %>% html_nodes('[data-tn-component="jobHeader"] .company') %>% html_text()
+            #pageJob %>% html_nodes('[data-tn-component="jobHeader"] .location') %>% html_text()
+            #pageJob %>% html_nodes('#job_summary') %>% html_text()
+            #pageJob %>% html_nodes('.result-link-bar .date') %>% html_text()
+            
+            data <- scrapJobsVac(pageJob = pageJob, id = idJob,tagPosit = '[data-tn-component="jobHeader"] .jobtitle',
+                                 tagCompany = '[data-tn-component="jobHeader"] .company',
+                                 tagCityState = '[data-tn-component="jobHeader"] .location',tagDate = '.result-link-bar .date',
+                                 tagDescrip = '#job_summary', country = urlDF$country[i], url = url)
+            
+            dataDF <- rbind.fill(dataDF,data)
+            
+            print('Saving data set')
+            #fwrite(dataDF, paste('data/Glassdoor',Sys.Date(),'.csv', sep = '') )
+            fwrite(dataDF, paste('data/jobsIndeed',urlDF$country[i],Sys.Date(),'.csv',sep = '') )
+            
+            Sys.sleep(4) # DELAY
+          }## END FOR LINKS
+        }, error = function(e){
+          print(paste('ERROR READ LINKS: ', e , sep = ' ') )
+        })
+      }## END FOR TOTALPAGE
+    }, error = function(e){
+      print(paste('ERROR: ', e , sep = ' ') )
+    })
+  }## END FOR URLPAGE
+  return(dataDF)
+}
+
 
 #### **** PRE-PROCESS DATA **** ####
 preProcess <- function(dados){
@@ -175,6 +361,7 @@ collectReviews <- function(){
   }
 }
 
+
 reviewsLoveMondays <- function(){
   print('reviewsLoveMondays')
   urls     <- c('https://www.lovemondays.com.br/trabalhar-na-ifood/avaliacoes/pagina/',
@@ -216,19 +403,21 @@ reviewsLoveMondays <- function(){
           ratings <- c(ratings,rating)
         }## END review in nodes
         
-        reviewLoveMondays <- scrapReviews(nodes = nodes,tagDate = '.lm-Company-dateTime-label', tagTitle = '.lm-List-item-header-title',
+        reviews <- scrapReviews(nodes = nodes,tagDate = '.lm-Company-dateTime-label', tagTitle = '.lm-List-item-header-title',
                                           tagStatus = '.reviewer ',tagLocation = '.lm-List-item-contributions',
                                           tagRecommend = '.lm-Review-contribution p:nth-child(3)',tagPros = '.lm-Review-contribution p:nth-child(1)',
                                           tagCons = '.lm-Review-contribution p:nth-child(2)',tagAdvice = 'ni' ,
                                           company = company,ids = ids, ratings = ratings)
         
-        reviewDF <- rbind(reviewDF,reviewLoveMondays)
+        reviewDF <- rbind(reviewDF,reviews)
         fwrite(reviewDF, paste('data/reviewLoveM-',Sys.Date(),'.csv',sep = ''))
       }## END FOR totalPages
     }, error = function(e){
       print(paste('ERROR IN FOR URLS: ', e , sep = ' ') )
     })
   }#END FOR urls
+  print("***** END REVIEWS LOVE MONDAYS ****")
+  
 }
 
 reviewsGlassDoor <- function(){
@@ -269,20 +458,73 @@ reviewsGlassDoor <- function(){
           ## RECUPERANDO RATING DAS AVALIA??ES
           ratings <- nodes %>% html_nodes('.rating span') %>% html_attr('title') %>% gsub('[[:alpha:]]|\\s|[[:punct:]]','', .) %>% as.numeric(.) / 10
           
-          reviewGlassDoor <- scrapReviews(nodes = nodes,tagDate = '.date', tagTitle = '.tbl .h2.summary',
+          reviews <- scrapReviews(nodes = nodes,tagDate = '.date', tagTitle = '.tbl .h2.summary',
                                             tagStatus = '.tbl.reviewMeta .authorJobTitle.middle',tagLocation = '.tbl.reviewMeta .authorLocation.middle',
                                             tagRecommend = '.recommends .tightLt:nth-child(1)',tagOutlook = '.recommends .tightLt:nth-child(2)',
                                             tagCeo = '.recommends .tightLt:nth-child(3) .showDesk',tagPros = '.pros.mainText',
                                             tagCons = '.cons.mainText',tagAdvice = '.adviceMgmt' ,
                                             company = company,ids = ids, ratings = ratings)
           
-          reviewDF <- rbind(reviewDF,reviewGlassDoor)
+          reviewDF <- rbind(reviewDF,reviews)
           fwrite(reviewDF, paste('data/reviewGlassD-',Sys.Date(),'.csv',sep = ''))
         }## END FOT totalPages
     }, error = function(e){
       print(paste('ERROR IN FOR URLS: ', e , sep = ' ') )
     })
   }## END FOR urls
+  print("***** END REVIEWS GLASSDOOR ****")
+  
+}
+
+reviewsIndeed <- function(){
+  print('reviewsIndeed')
+  urls <- c('https://www.indeed.com.br/cmp/Oracle/reviews',
+            'https://www.indeed.com.br/cmp/Ifood/reviews',
+            'https://www.indeed.com.br/cmp/IBM/reviews',
+            'https://www.indeed.com.br/cmp/Microsoft/reviews',
+            'https://www.indeed.com.br/cmp/Google/reviews') #1
+  reviewDF <- data.frame()
+  
+  urlPage <- urls
+  for(urlPage in urls){
+    tryCatch({
+      ## READ THE FIRST PAGE TO GET THE COMPANY'S NAME AND TOTAL OF PAGES
+      webPage  <- read_html(paste(urlPage,'?start=0',sep = '') )
+      company  <- webPage %>% html_nodes('.cmp-company-name') %>% html_text()
+      
+      ## RECUPERANDO O TOTAL DE AVALIA??ES
+      totalRew   <- as.numeric(webPage %>% html_nodes('.cmp-filter-result') %>% html_text() %>% gsub('[[:alpha:]]|\\s|[[:punct:]]','', .))
+      
+      if(!identical(totalRew,numeric(0)) & !is.na(totalRew) ){
+        totalPages <- round(totalRew/21)  
+      }else{
+        totalPages <- 1
+      }
+      for( page in 0:totalPages){
+        cat('\n\n==> Page: ',page)
+        urlPage2 <- paste(urlPage,'?start=',as.character(page*20), sep = '')
+        cat('\t',urlPage2)
+        
+        webPage <- read_html(urlPage2)
+        nodes   <- webPage %>% html_nodes('.cmp-review-container')
+        ids     <- nodes %>% html_nodes('.cmp-review') %>% html_attr('data-tn-entityid') #%>% gsub('[[:alpha:]]|\\s|[[:punct:]]','', .)
+        ratings <- nodes %>% html_nodes('.cmp-ratings meta') %>% html_attr('content')
+        
+        reviews <- scrapReviews(nodes = nodes,tagDate = '.cmp-review-date-created', tagTitle = '.cmp-review-title',
+                                          tagStatus = '.cmp-reviewer-job-title',tagLocation = '.cmp-reviewer-job-location',
+                                          tagRecommend = 'ni',tagPros = '.cmp-review-pros',
+                                          tagCons = '.cmp-review-cons',tagAdvice = 'ni' ,
+                                          company = company,ids = ids, ratings = ratings)
+        
+        reviewDF <- rbind(reviewDF,reviews)
+        fwrite(reviewDF, paste('data/reviewIndeed-',Sys.Date(),'.csv',sep = ''))
+      }## END FOR totalPages
+      Sys.sleep(3)
+    }, error = function(e){
+      print(paste('ERROR IN FOR URLS: ', e , sep = ' ') )
+    })
+  }#END FOR urls
+  print("***** END REVIEWS INDEED ****")
 }
 
 ## FUN??O PARA FAZER PRE-PROCESSAMENTO DA AVALIA??ES DO SITE LOVE MONDAYS
@@ -395,6 +637,7 @@ transGlassDoor <- function(){
 #### **** MAIN **** ####
 
 #### >>>> JOBS VACANCIES ####
+#jobsLoveM()
 
 #print(getwd())
 #url <- c('https://www.glassdoor.com/Job/canada-data-scientist-jobs-SRCH_IL.0,6_IN3_KO7,21_IP','https://www.glassdoor.com/Job/us-data-scientist-jobs-SRCH_IL.0,2_IN1_KO3,17_IP')
@@ -409,8 +652,12 @@ transGlassDoor <- function(){
 #clusterDM()
 
 #### >>>> COMPANIES' REVIEWS  ####
-reviewsLoveMondays() ## SCRAPPING AVALIA??ES NO SITE LOVE MONDAYS
-reviewsGlassDoor() ## SCRAPPING AVALIA??ES NO GLASSDOOR
-transGlassDoor() ## TRANSFORMA??ES AVALIA??ES DO SITE GLASSDOOR
-transLoveMond() ## TRANSFORMA??ES AVALIA??ES DO SITE LOVE MONDAYS
+#reviewsLoveMondays() ## SCRAPPING AVALIA??ES NO SITE LOVE MONDAYS
+#reviewsGlassDoor() ## SCRAPPING AVALIA??ES NO GLASSDOOR
+#transGlassDoor() ## TRANSFORMA??ES AVALIA??ES DO SITE GLASSDOOR
+#transLoveMond() ## TRANSFORMA??ES AVALIA??ES DO SITE LOVE MONDAYS
 
+reviewsIndeed()
+
+
+  
