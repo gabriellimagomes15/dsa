@@ -274,8 +274,9 @@ scrapReviews <- function(nodes = '',tagDate = 'ni', tagTitle = 'ni',tagStatus = 
       
       dateCol <- Sys.Date()
       
-      dataFrame <- data.frame(company, date, title,dataCollect = dateCol, status, location, recommend, outlook, ceo, pros, cons, adviceManag)
-      
+      dataFrame <- data.frame(company, date, title,dataCollect = dateCol, status, location, recommend, outlook, 
+                              ceo, pros, cons, adviceManag)
+
       reviewDF <- rbind(reviewDF, dataFrame)
       fwrite(reviewDF, 'reviews.csv')
     }## END FOR NODES

@@ -361,6 +361,7 @@ collectReviews <- function(){
   }
 }
 
+
 reviewsLoveMondays <- function(){
   print('reviewsLoveMondays')
   urls     <- c('https://www.lovemondays.com.br/trabalhar-na-ifood/avaliacoes/pagina/',
@@ -402,19 +403,21 @@ reviewsLoveMondays <- function(){
           ratings <- c(ratings,rating)
         }## END review in nodes
         
-        reviewLoveMondays <- scrapReviews(nodes = nodes,tagDate = '.lm-Company-dateTime-label', tagTitle = '.lm-List-item-header-title',
+        reviews <- scrapReviews(nodes = nodes,tagDate = '.lm-Company-dateTime-label', tagTitle = '.lm-List-item-header-title',
                                           tagStatus = '.reviewer ',tagLocation = '.lm-List-item-contributions',
                                           tagRecommend = '.lm-Review-contribution p:nth-child(3)',tagPros = '.lm-Review-contribution p:nth-child(1)',
                                           tagCons = '.lm-Review-contribution p:nth-child(2)',tagAdvice = 'ni' ,
                                           company = company,ids = ids, ratings = ratings)
         
-        reviewDF <- rbind(reviewDF,reviewLoveMondays)
+        reviewDF <- rbind(reviewDF,reviews)
         fwrite(reviewDF, paste('data/reviewLoveM-',Sys.Date(),'.csv',sep = ''))
       }## END FOR totalPages
     }, error = function(e){
       print(paste('ERROR IN FOR URLS: ', e , sep = ' ') )
     })
   }#END FOR urls
+  print("***** END REVIEWS LOVE MONDAYS ****")
+  
 }
 
 reviewsGlassDoor <- function(){
@@ -455,72 +458,73 @@ reviewsGlassDoor <- function(){
           ## RECUPERANDO RATING DAS AVALIA??ES
           ratings <- nodes %>% html_nodes('.rating span') %>% html_attr('title') %>% gsub('[[:alpha:]]|\\s|[[:punct:]]','', .) %>% as.numeric(.) / 10
           
-          reviewGlassDoor <- scrapReviews(nodes = nodes,tagDate = '.date', tagTitle = '.tbl .h2.summary',
+          reviews <- scrapReviews(nodes = nodes,tagDate = '.date', tagTitle = '.tbl .h2.summary',
                                             tagStatus = '.tbl.reviewMeta .authorJobTitle.middle',tagLocation = '.tbl.reviewMeta .authorLocation.middle',
                                             tagRecommend = '.recommends .tightLt:nth-child(1)',tagOutlook = '.recommends .tightLt:nth-child(2)',
                                             tagCeo = '.recommends .tightLt:nth-child(3) .showDesk',tagPros = '.pros.mainText',
                                             tagCons = '.cons.mainText',tagAdvice = '.adviceMgmt' ,
                                             company = company,ids = ids, ratings = ratings)
           
-          reviewDF <- rbind(reviewDF,reviewGlassDoor)
+          reviewDF <- rbind(reviewDF,reviews)
           fwrite(reviewDF, paste('data/reviewGlassD-',Sys.Date(),'.csv',sep = ''))
         }## END FOT totalPages
     }, error = function(e){
       print(paste('ERROR IN FOR URLS: ', e , sep = ' ') )
     })
   }## END FOR urls
+  print("***** END REVIEWS GLASSDOOR ****")
+  
 }
 
 reviewsIndeed <- function(){
   print('reviewsIndeed')
-  urls <- c('https://www.indeed.com.br/cmp/Oracle/reviews?start=') #1
-  
+  urls <- c('https://www.indeed.com.br/cmp/Oracle/reviews',
+            'https://www.indeed.com.br/cmp/Ifood/reviews',
+            'https://www.indeed.com.br/cmp/IBM/reviews',
+            'https://www.indeed.com.br/cmp/Microsoft/reviews',
+            'https://www.indeed.com.br/cmp/Google/reviews') #1
   reviewDF <- data.frame()
   
+  urlPage <- urls
   for(urlPage in urls){
     tryCatch({
       ## READ THE FIRST PAGE TO GET THE COMPANY'S NAME AND TOTAL OF PAGES
-      webPage  <- read_html(paste(urlPage,'10',sep = '') )
-      webPage  <- read_html('https://www.indeed.com.br/cmp/Oracle/reviews?start=20')
-      company  <- webPage %>% html_nodes('.cmp-review') %>% html_text()
+      webPage  <- read_html(paste(urlPage,'?start=0',sep = '') )
+      company  <- webPage %>% html_nodes('.cmp-company-name') %>% html_text()
       
       ## RECUPERANDO O TOTAL DE AVALIA??ES
-      totalRew   <- as.numeric(webPage %>% html_nodes('.lm-Tabs-default--companyHeader .lm-Tabs-default-item.is-active') %>% html_text() %>% gsub('[[:alpha:]]|\\s|[[:punct:]]','', .))
+      totalRew   <- as.numeric(webPage %>% html_nodes('.cmp-filter-result') %>% html_text() %>% gsub('[[:alpha:]]|\\s|[[:punct:]]','', .))
+      
       if(!identical(totalRew,numeric(0)) & !is.na(totalRew) ){
-        totalPages <- round(totalRew/10)  
+        totalPages <- round(totalRew/21)  
       }else{
         totalPages <- 1
       }
-      for( page in 1:totalPages){
-        cat('==> Page: ',page)
-        urlPage2 <- paste(urlPage,page, sep = '')
+      for( page in 0:totalPages){
+        cat('\n\n==> Page: ',page)
+        urlPage2 <- paste(urlPage,'?start=',as.character(page*20), sep = '')
         cat('\t',urlPage2)
         
         webPage <- read_html(urlPage2)
-        nodes   <- webPage %>% html_nodes('section .lm-List-default .lm-List-default-row')
+        nodes   <- webPage %>% html_nodes('.cmp-review-container')
+        ids     <- nodes %>% html_nodes('.cmp-review') %>% html_attr('data-tn-entityid') #%>% gsub('[[:alpha:]]|\\s|[[:punct:]]','', .)
+        ratings <- nodes %>% html_nodes('.cmp-ratings meta') %>% html_attr('content')
         
-        ids     <- nodes %>% html_nodes('.lm-List-item-header-title a') %>% html_attr('href') %>% gsub('[[:alpha:]]|\\s|[[:punct:]]','', .)
-        ratings <- c()
-        for(review in nodes){
-          rating <- 5 * (review %>% html_nodes('.lm-RatingStar-starContainer div:nth-child(2).lm-RatingStar-starContainer-starsActive') %>% 
-                           html_attrs() %>% .[[1]] %>% unlist(.) %>% paste(.,collapse = ' ') %>% 
-                           gsub('[[:alpha:]]|\\s|[[:punct:]]','', .) %>% as.numeric(.) / 100)
-          ratings <- c(ratings,rating)
-        }## END review in nodes
-        
-        reviewLoveMondays <- scrapReviews(nodes = nodes,tagDate = '.lm-Company-dateTime-label', tagTitle = '.lm-List-item-header-title',
-                                          tagStatus = '.reviewer ',tagLocation = '.lm-List-item-contributions',
-                                          tagRecommend = '.lm-Review-contribution p:nth-child(3)',tagPros = '.lm-Review-contribution p:nth-child(1)',
-                                          tagCons = '.lm-Review-contribution p:nth-child(2)',tagAdvice = 'ni' ,
+        reviews <- scrapReviews(nodes = nodes,tagDate = '.cmp-review-date-created', tagTitle = '.cmp-review-title',
+                                          tagStatus = '.cmp-reviewer-job-title',tagLocation = '.cmp-reviewer-job-location',
+                                          tagRecommend = 'ni',tagPros = '.cmp-review-pros',
+                                          tagCons = '.cmp-review-cons',tagAdvice = 'ni' ,
                                           company = company,ids = ids, ratings = ratings)
         
-        reviewDF <- rbind(reviewDF,reviewLoveMondays)
-        fwrite(reviewDF, paste('data/reviewLoveM-',Sys.Date(),'.csv',sep = ''))
+        reviewDF <- rbind(reviewDF,reviews)
+        fwrite(reviewDF, paste('data/reviewIndeed-',Sys.Date(),'.csv',sep = ''))
       }## END FOR totalPages
+      Sys.sleep(3)
     }, error = function(e){
       print(paste('ERROR IN FOR URLS: ', e , sep = ' ') )
     })
   }#END FOR urls
+  print("***** END REVIEWS INDEED ****")
 }
 
 ## FUN??O PARA FAZER PRE-PROCESSAMENTO DA AVALIA??ES DO SITE LOVE MONDAYS
@@ -633,7 +637,7 @@ transGlassDoor <- function(){
 #### **** MAIN **** ####
 
 #### >>>> JOBS VACANCIES ####
-d <- jobsLoveM()
+#jobsLoveM()
 
 #print(getwd())
 #url <- c('https://www.glassdoor.com/Job/canada-data-scientist-jobs-SRCH_IL.0,6_IN3_KO7,21_IP','https://www.glassdoor.com/Job/us-data-scientist-jobs-SRCH_IL.0,2_IN1_KO3,17_IP')
@@ -648,8 +652,12 @@ d <- jobsLoveM()
 #clusterDM()
 
 #### >>>> COMPANIES' REVIEWS  ####
-reviewsLoveMondays() ## SCRAPPING AVALIA??ES NO SITE LOVE MONDAYS
-reviewsGlassDoor() ## SCRAPPING AVALIA??ES NO GLASSDOOR
-transGlassDoor() ## TRANSFORMA??ES AVALIA??ES DO SITE GLASSDOOR
-transLoveMond() ## TRANSFORMA??ES AVALIA??ES DO SITE LOVE MONDAYS
+#reviewsLoveMondays() ## SCRAPPING AVALIA??ES NO SITE LOVE MONDAYS
+#reviewsGlassDoor() ## SCRAPPING AVALIA??ES NO GLASSDOOR
+#transGlassDoor() ## TRANSFORMA??ES AVALIA??ES DO SITE GLASSDOOR
+#transLoveMond() ## TRANSFORMA??ES AVALIA??ES DO SITE LOVE MONDAYS
 
+reviewsIndeed()
+
+
+  
