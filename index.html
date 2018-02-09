@@ -583,7 +583,7 @@ function chartsJobs(countrySelect){
       //if (error) throw error;
       //console.log(data)
 
-      var data = dados.data
+      var data = dados.jobs
 
       var format = d3.format(",d"); 
       var div2 = d3.select('#boxnumbertwo')
@@ -820,7 +820,7 @@ function chartsReviews(companySelect){
   var format    = d3.format(",d"); 
 
 
-  d3.csv("data/reviewGlassDClean.csv", function(data) {
+  //d3.csv("data/reviewGlassDClean.csv", function(data) {
       //console.log('da = ', d.dateClean)
       //d.dateClean = parseTime(d.dateClean);
       //d.count = +d.close;
@@ -831,11 +831,11 @@ function chartsReviews(companySelect){
 
       //TOTAL DE INSTITUIÇÕES PARTICIPANTES
 
+      data = dados.reviews
 
       var div2 = d3.select('#boxtworeview')
       var countCompany = group(data,['company'])
-      var scaleColor = d3.scaleSequential(d3["interpolateBlues"])
-             .domain([0, 4]);
+      var scaleColor = d3.scaleSequential(d3["interpolateBlues"]).domain([-1, 5]);
 
       d3.select('.boxtworeview .card-body-icon').append('i').classed('fa fa-fw fa-building', true)
       d3.select('.boxtworeview').style('background-color', scaleColor(2))
@@ -1090,7 +1090,7 @@ function chartsReviews(companySelect){
       bubbleChart.call(bubCons.g, {data: groupConsComents,margins: bubCons.margins, setColor: 'interpolateReds'})
 
 
-  });//FIM D3.CSV
+  //});//FIM D3.CSV
 } // FIM FUNÇÃO CHARTSREVIEWS
 
 //var scaleColor = d3.scaleSequential(d3["interpolateBlues"]).domain([0, d3.max(params.data, function(d) { return d.count; })]);

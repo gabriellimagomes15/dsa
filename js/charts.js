@@ -21,8 +21,11 @@ var limitSelec = 1;
 function readData (){
 	console.log('lendo dados')
   	d3.csv('data/dadosFinal.csv', function(error, data){
-  	dados.data = data;
-  });
+  		dados.jobs = data;
+  	});
+  	d3.csv("data/reviewGlassDClean.csv", function(error, data) {
+  		dados.reviews = data
+  	});
 }
 
 function createNestingFunction(propertyName){
