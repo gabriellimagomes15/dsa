@@ -706,6 +706,12 @@ function chartsJobs(countrySelect){
       
 
       var dateUpdate = group(data, ['dateCollect'])
+      dateUpdate.sort(function(x, y){        
+        return d3.descending(x.value,y.value);
+      })
+
+      console.log('date = ', dateUpdate)
+
       var divUpdate = d3.selectAll('.card-footer span').text(dateUpdate[0].value)
       
       //MONTAR BOX/DIV COM INFORMAÇÕES NUMÉRICAS
@@ -1005,6 +1011,10 @@ function chartsReviews(companySelect){
                 });
 
       var dateUpdate = group(data, ['dateCollect'])
+      dateUpdate.sort(function(x, y){        
+        return d3.descending(x.value,y.value);
+      })
+      
       var divUpdate = d3.selectAll('.card-footer span').text(dateUpdate[0].value)
       //boxNumber2.call(div3, {docs: metricRating, title: "Cities"})
 
