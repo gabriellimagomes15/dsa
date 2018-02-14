@@ -511,6 +511,68 @@ function chartsJobs(countrySelect){
           return x.country == countrySelect
         }
       })
+      $.getJSON('data/t5.geojson', function (geojson) {
+          // Initiate the chart
+          Highcharts.mapChart('clustermap', {
+
+              chart: {
+              spacingBottom: 20
+          },
+          title: {
+              text: ''
+          },
+
+          legend: {
+              enabled: true
+          },
+
+           mapNavigation: {
+              enabled: true
+          },
+          plotOptions: {
+              map: {
+                  allAreas: false,
+                  joinBy: ['sigla', 'code'],
+                  dataLabels: {
+                      enabled: true,
+                      color: '#FFFFFF',
+                      formatter: function () {
+                          if (this.point.properties ) {
+                              var label = this.point.properties['sigla'].replace('_br','')
+                              return label;
+                          }
+                      },
+                      format: null,
+                      style: {
+                          fontWeight: 'bold'
+                      }
+                  },
+                  mapData: geojson, //Highcharts.maps['custom/usa-and-canada'],
+                  tooltip: {
+                      headerFormat: '',
+                      pointFormat:  '{point.name}: <b>{series.name}</b>'
+                  }
+
+              }
+          },
+
+          series: [{
+              name: 'Cluster 1',
+              data: data.filter(function(x) {  return x.Cluster == '1'}).map(function(y){ return {code: y.state}})
+            },{
+              name: 'Cluster 2',
+              data: data.filter(function(x) {  return x.Cluster == '2'}).map(function(y){ return {code: y.state}})
+           },{
+              name: 'Cluster 3',
+              data: data.filter(function(x) {  return x.Cluster == '3'}).map(function(y){ return {code: y.state}})
+           },{
+              name: 'Cluster 4',
+              data: data.filter(function(x) {  return x.Cluster == '4'}).map(function(y){ return {code: y.state}})
+           }
+          ]
+        });
+      });
+      /*
       Highcharts.mapChart('clustermap', {
           chart: {
               spacingBottom: 20
@@ -568,6 +630,7 @@ function chartsJobs(countrySelect){
          }
         ]
       });
+      */
   });
 
 
@@ -615,6 +678,8 @@ function chartsJobs(countrySelect){
           return x.country == countrySelect
         }
       })
+
+
       //TOTAL DE INSTITUIÇÕES PARTICIPANTES
       var div1 = d3.select('#boxnumber')
       
@@ -627,7 +692,7 @@ function chartsJobs(countrySelect){
 
       var div2 = d3.select('#boxnumberthird')
       
-      var countCities = group(data,['cityClear'])
+      var countCities = group(data,['city'])
       d3.select('.boxthird .card-body-icon').append('i').classed('fa fa-fw fa-location-arrow ', true)   
 
       boxNumber2.call(div2, {docs: countCities, title: "Cities"})
@@ -635,13 +700,13 @@ function chartsJobs(countrySelect){
       var div2 = d3.select('#boxnumberfour')
       d3.select('.boxfour .card-body-icon').append('i').classed('fa fa-fw fa-building', true)   
 
-      var countPositions = group(data,['JobClear'])
+      var countPositions = group(data,['position'])
       boxNumber2.call(div2, {docs: countPositions, title: "Positions"})
 
       
 
-      var dateUpdate = group(data, ['dateColect'])
-      var divUpdate = d3.selectAll('.card-footer span').text(dateUpdate[1].value)
+      var dateUpdate = group(data, ['dateCollect'])
+      var divUpdate = d3.selectAll('.card-footer span').text(dateUpdate[0].value)
       
       //MONTAR BOX/DIV COM INFORMAÇÕES NUMÉRICAS
       /*boxNumber.call(div, {docs: data, title: "Total of Posts Jobs"})
@@ -671,7 +736,7 @@ function chartsJobs(countrySelect){
       var line  = initVar.call(null, {id: '#linechart', titleDiv: "", class: '', width: w, height: h})
       
 
-      groupDate = group(data,['dateClean'])
+      groupDate = group(data,['date'])
 
       groupDate.map(function(x){      
         //console.log(parseTime(x.value) )
@@ -724,7 +789,7 @@ function chartsJobs(countrySelect){
 
       var bar = initVar.call(null, {id: '#barchart', titleDiv: "", class: '', width: w, height:h})    
       
-      var groupJobs = group(data, ['JobClear'])
+      var groupJobs = group(data, ['position'])
       
       
       var x = d3.scaleBand().range([0,bar.margins.width]).padding(0.1),
@@ -776,7 +841,7 @@ function chartsJobs(countrySelect){
       h = parseInt(d3.select('#treemap').style('height')) * 12
       var barCity = initVar.call(null, {id: '#treemap', titleDiv: "", class: 'treemap', width: w, height:h})    
 
-      var groupCity = group(data, ['cityClear'])
+      var groupCity = group(data, ['city'])
       
       
       var x = d3.scaleBand().range([0,barCity.margins.width]).padding(0.1),//d3.scaleLinear().rangeRound([0,vars.margins.width]),
@@ -984,7 +1049,7 @@ function chartsReviews(companySelect){
           y = d3.scaleLinear().rangeRound([bar.margins.height,0])
           //y = d3.scaleBand().range([bar.margins.height, 0]).padding(0.1);
       var years = data.map(function(x){
-        return {value: new Date(x.dateClear).getFullYear() }
+        return {value: new Date(x.date).getFullYear() }
       })
             
       groupYear = group(years,['value'])
@@ -1032,7 +1097,7 @@ function chartsReviews(companySelect){
 
       var arrayPros = []
       data.map(function(x){
-        x.prosClean.split(' ').map(function(d){
+        x.pros.split(' ').map(function(d){
           //console.log(d)
           arrayPros.push({pros:d})
         })
@@ -1064,7 +1129,7 @@ function chartsReviews(companySelect){
 
       var arrayCons = []
       data.map(function(x){
-        x.consClean.split(' ').map(function(d){
+        x.cons.split(' ').map(function(d){
           //console.log(d)
           arrayCons.push({pros:d})
         })

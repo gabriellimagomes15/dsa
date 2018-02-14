@@ -1,4 +1,7 @@
-'bachelor'
-'master'
-'phd'
-'mba'
+V1
+bachelor
+master
+phd
+mba
+bacharelado
+mestre

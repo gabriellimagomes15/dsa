@@ -1,7 +1,9 @@
 #### **** DATA MINING (CLUSTER) **** ####
 clusterDM <- function(data,columns = ''){
-  data    <- fread('data/dadosFinal.csv')
-  columns <- c('JobClear', 'skills', 'education', 'language','stateClear','country')
+  #
+  data    <- fread('data/jobsFinal.csv',encoding = 'UTF-8')
+  data <- data[data$country == 'brazil',]
+  columns <- c('position', 'skills', 'education', 'language','state','country')
   
   dados_2 <- data[,..columns]
   
@@ -22,7 +24,7 @@ clusterDM <- function(data,columns = ''){
   cluster         <- kmeans(dados_4, centers = 4)
   dados_3$cluster <- cluster$cluster
   
-  tableClusterReq <- data.frame(table(dados_3$stateClear, dados_3$cluster), stringsAsFactors = F)
+  tableClusterReq <- data.frame(table(dados_3$state, dados_3$cluster), stringsAsFactors = F)
   
   
   tableClusterReq$Var1 <- as.character(tableClusterReq$Var1) 
@@ -33,19 +35,22 @@ clusterDM <- function(data,columns = ''){
                   dplyr::mutate(value = max(Freq)) %>%
                   filter(Freq == value) %>% select(Var1, Var2)
   
-  cities <-  data.frame(unique.data.frame(dados_3[,c('stateClear','country')],incomparables = F))
+  cities <-  data.frame(unique.data.frame(dados_3[,c('state','country')],incomparables = F))
   
   ## INSERINDO O PAÍS PARA CADA PROVINCIA/ESTADO
   clusterReq$country <- sapply(clusterReq$Var1, function(x){
-    x <- cities[cities$stateClear == x,]$country
-    if(x == ''){
+    x <- cities[cities$state == x,]$country
+    if(x[1] == ''){
       x <- ''
     }
-    x
+    x[1]
   })
     
   colnames(clusterReq) <- c('state','Cluster','country')
   
-  #data.table::fwrite(clusterReq, 'data/clusterReq2.csv')
+  #
+  data.table::fwrite(clusterReq, 'data/clusterReq2.csv')
   return(clusterReq)
 }
+
+

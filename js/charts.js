@@ -20,10 +20,10 @@ var limitSelec = 1;
 
 function readData (){
 	console.log('lendo dados')
-  	d3.csv('data/dadosFinal.csv', function(error, data){
+  	d3.csv('data/jobsFinal.csv', function(error, data){
   		dados.jobs = data;
   	});
-  	d3.csv("data/reviewGlassDClean.csv", function(error, data) {
+  	d3.csv("data/reviewFinal.csv", function(error, data) {
   		dados.reviews = data
   	});
 }
