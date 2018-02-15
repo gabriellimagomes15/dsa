@@ -32,7 +32,6 @@
 	
 }
 
-
 .borderDiv{
   border: solid 1px #ccc;
   box-shadow: 2px 2px 2px #ccc;
@@ -55,3 +54,5 @@
   margin-top:0px;
   font-weight: bolder !important; 
 }
+
+

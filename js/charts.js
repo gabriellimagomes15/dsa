@@ -19,13 +19,19 @@ var limitSelec = 1;
 // UTILIZADA PARA CRIAR O GROUPBY DINAMICAMENTE
 
 function readData (){
-	console.log('lendo dados')
-  	d3.csv('data/jobsFinal.csv', function(error, data){
+	console.log('Lendo Dados')
+	  var def = $.Deferred();
+
+	d3.csv('data/jobsFinal.csv', function(error, data){
   		dados.jobs = data;
   	});
   	d3.csv("data/reviewFinal.csv", function(error, data) {
   		dados.reviews = data
   	});
+  	d3.csv("data/clusterReq2.csv", function(error, data) {
+  		dados.clusterReq = data
+  	});
+  	return def;
 }
 
 function createNestingFunction(propertyName){
