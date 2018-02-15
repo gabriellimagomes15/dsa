@@ -3,8 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Jobs Vacancies Analysis</title>
-
+  <title>Jobs Vacancies and Companies Reviews Analysis</title>
 
   <script src="http://code.jquery.com/jquery-3.2.1.js"></script>
   <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -19,7 +18,6 @@
   <script src="https://code.highcharts.com/maps/modules/data.js"></script>
   <script src="https://code.highcharts.com/mapdata/custom/europe.js"></script>
   
-  <!--script src="https://code.highcharts.com/mapdata/custom/usa-and-canada.js"></script-->
   <script src='js/usa-and-canada.js'></script>
 
   <script src="https://use.fontawesome.com/e6b4ddaa2c.js"></script>
@@ -32,17 +30,10 @@
 
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   
   <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-<!--
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
--->
-  <!-- Page level plugin CSS-->
 
-  <!-- Custom fonts for this template-->
 <style type="text/css">
   .card.text-whit{e
     box-shadow: 7px 7px 5px #ccc;
@@ -152,12 +143,9 @@
     <div id='dashboardjobs' class="container-fluid tab-pane fade  " role="tabpanel">
       <!-- Breadcrumbs-->
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-          <a href="#">Dashboard</a>
-        </li>
-        <li class="breadcrumb-item active">My Dashboard</li>
+        <li class="breadcrumb-item active">Dashboard Jobs Vacancies </li>
       </ol>
-      <!-- Icon Cards-->
+      <!-- Boxes Informations -->
       <div class="row">
         <div class="col-xl-3 col-sm-6 mb-3">
           <div class="card text-white bg-primary o-hidden h-70">
@@ -167,12 +155,6 @@
               </div>
               <div id='boxnumber' class="mr-5"></div>
             </div>
-            <!--a class="card-footer text-white clearfix small z-1" href="#">
-              <span class="float-left">View Details</span>
-              <span class="float-right">
-                <i class="fa fa-angle-right"></i>
-              </span>
-            </a-->
           </div>
         </div>
         <div class="col-xl-3 col-sm-6 mb-3">
@@ -211,43 +193,28 @@
           </div>
         </div>
       </div>
-      <!-- Area Chart Example-->
+      <!-- End Boxes Informations -->
       <div class="card mb-3">
         <div class="card-header">
           <i class="fa fa-line-chart"></i> Jobs Vacancies by Date</div>
         <div id='linechart' class="card-body" ></div>
-        <!--svg id='linechart' class="d"></svg> -->
         <div class="card-footer small text-muted">Updated in <span></span></div>
       </div>
-
       <div class="row">
         <div class="col-lg-8">
-          <!-- Example Bar Chart Card-->
           <div class="card mb-3">
             <div class="card-header">
               <i class="fa fa-bar-chart"></i> Jobs Position</div>
-            <div id='barchart' class="card-body">
-              <!--div class="row">
-                <div id='barchart' class="col-sm-8 my-auto"></div>
-                <div class="col-sm-4 text-center my-auto">
-                  <div class="h4 mb-0 text-primary">$34,693</div>
-                  <div class="small text-muted">YTD Revenue</div>
-                  <hr>
-                  <div class="h4 mb-0 text-warning">$18,474</div>
-                  <div class="small text-muted">YTD Expenses</div>
-                  <hr>
-                  <div class="h4 mb-0 text-success">$16,219</div>
-                  <div class="small text-muted">YTD Margin</div>
-                </div-->
-              </div>
-              <div class="card-footer small text-muted">Updated in <span></span></div>
-            </div>
+            <div id='barchart' class="card-body"></div>
+            <div class="card-footer small text-muted">Updated in <span></span></div>
+          </div>
           
           <div class="card mb-3">
             <div class="card-header"><i class="fa fa-trello"></i> Treemap of Jobs Vacancies by City</div>
             <div id='treemap' class="card-body"></div>
             <div class="card-footer small text-muted">Updated in <span></span></div>
           </div>
+          
           <div class="card mb-3">
             <div class="card-header"><i class="fa fa-map"></i> Map of Requirements Cluster by States</div>
             <div id='clustermap' class="card-body col-sm-12 my-auto" ></div>
@@ -256,19 +223,20 @@
           </div>
         </div>
         <div class="col-lg-4">
-          <!-- Example Pie Chart Card-->
           <div class="card mb-3">
             <div class="card-header">
               <i class="fa fa-pie-chart"></i> Languages Requirements</div>
             <div id='piechart' class="card-body"></div>
             <div class="card-footer small text-muted">Updated in <span></span></div>
           </div>
+          
           <div class="card mb-3">
             <div class="card-header">
               <i class="fa fa-pie-chart"></i> Education Requirements</div>
             <div id='piecharttwo' class="card-body"></div>
             <div class="card-footer small text-muted">Updated in <span></span></div>
           </div>
+          
           <div class="card mb-3">
             <div class="card-header">
               <i class="fa fa-circle"></i> Tech Skills Requirements</div>
@@ -279,16 +247,11 @@
       </div>
     </div> 
     <!-- FIM DIV dashboardjobs-->
-    
+
     <div id='dashboardreviews' class="container-fluid tab-pane fade  " role="tabpanel">
-        <!-- Breadcrumbs-->
       <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-          <a href="#">Dashboard</a>
-        </li>
-        <li class="breadcrumb-item active">My Dashboard</li>
+        <li class="breadcrumb-item active">Dashboard Companies Reviews</li>
       </ol>
-      <!-- Icon Cards-->
       <div class="row">
         <div class="col-xl-3 col-sm-6 mb-3">
           <div class="card text-white bg-inf o-hidden h-70 boxonereview">
@@ -298,12 +261,6 @@
               </div>
               <div id='boxonereview' class="mr-5"></div>
             </div>
-            <!--a class="card-footer text-white clearfix small z-1" href="#">
-              <span class="float-left">View Details</span>
-              <span class="float-right">
-                <i class="fa fa-angle-right"></i>
-              </span>
-            </a-->
           </div>
         </div>
         <div class="col-xl-3 col-sm-6 mb-3">
@@ -343,12 +300,10 @@
           </div>
         </div>
       </div>
-      <!-- Area Chart Example-->
       <div class="card mb-3">
         <div class="card-header">
           <i class="fa fa-bar-chart"></i> Reviews by Year</div>
         <div id='barchartreviews' class="card-body" ></div>
-        <!--svg id='linechart' class="d"></svg> -->
         <div class="card-footer small text-muted">Updated in <span></span></div>
       </div>
       <div class="row">
@@ -372,14 +327,11 @@
       <div class="card mb-3">
         <div class="card-header">
           <i class="fa fa-bar-chart"></i> Total of Positions (top 10)</div>
-        <div id='pisitionchart' class="card-body"></div>
+        <div id='positionchart' class="card-body"></div>
         <div class="card-footer small text-muted">Updated in <span></span></div>
       </div>
       <div class="row">
         <div class="col-lg-8">
-          <!-- Example Bar Chart Card-->
-          
-          
           <div class="card mb-3">
             <div class="card-header"><i class="fa fa-trello"></i> Treemap of Reviews  by City</div>
             <div id='treemapreview' class="card-body"></div>
@@ -392,19 +344,18 @@
             <div class="card-footer small text-muted">Updated in <span></span></div>
           </div>
         </div>
+
         <div class="col-lg-4">
-          <!-- Example Pie Chart Card-->
           <div class="card mb-3">
             <div class="card-header">
               <i class="fa fa-pie-chart"></i> Recommends </div>
             <div id='pierecommend' class="card-body"></div>
             <div class="card-footer small text-muted">Updated in <span></span></div>
           </div>
-
         </div>        
       </div>  
-    </div> <!-- FIM DIV dashboardreviews-->
-
+    </div> 
+    <!-- FIM DIV dashboardreviews-->
 
     <div id='about' class="container-fluid tab-pane fade " role="tabpanel">
       <div class="container jumbotron">
@@ -421,6 +372,7 @@
         </div>
       </div>
     </div>
+
     <div id='contact' class="container-fluid tab-pane fade " role="tabpanel">
         <div class="jumbotron container">
           <div class="row">
@@ -448,12 +400,10 @@
                 </a>
             </div>
           </div>
-          
         </div>
     </div>
-  </div>
 
-      <footer class="sticky-footer">
+    <footer class="sticky-footer">
       <div class="container">
         <div class="text-center">
           <small>Copyright © Gabriel Lima Gomes 2018</small>
@@ -463,35 +413,33 @@
     <a class="scroll-to-top rounded" href="#page-top" style="display: inline;">
       <i class="fa fa-angle-up"></i>
     </a>
-<!--div>
-  <svg id='d' width="960" height="960" font-family="sans-serif" font-size="10" text-anchor="middle"></svg>  
-</div>
-<svg id='row-1' class="row"></svg-->
-
-
-
 
 <script>
   
-//d3.select(window).on('resize',  resize );
-var tooltip = d3.select("body").append("div").attr("class", "toolTip"),
-    bisectDate = d3.bisector(function(d) { return d.year; }).left;
+// CRIANDO OBJETO PARA GERAR OS 'tooltip' DOS GRÁFICOS
+var tooltip = d3.select("body").append("div").attr("class", "toolTip");
 
+// CRIANDO OBJETO PARA CONVERTER DATAS
+var parseTime = d3.timeParse("%Y-%m-%d");
+
+// CRIANDO OBJETO PARA FORMATAR NÚMERO
+var format = d3.format(",d"); 
+
+
+//CHAMANDO A FUNÇÃO PARA CARREGAR OS DADOS 
 readData();
 
+// FUNÇÃO PARA MONSTAR OS GRÁFICOS AO SELECIONAR O MENU 'DASHBOARDS JOBS VACANCIES'
+$('#menudashboardjobs').on('click',function(e){
+    setTimeout(chartsJobs,700,'');
+})
 
+// FUNÇÃO PARA REFAZER OS GRÁFICOS AO SELECIONAR UM PAÍS
 $('#selcountry').on('change',function(){
   chartsJobs(this.value)
 })
 
-$('#menudashboardjobs').on('click',function(e){
-    //$('.card-body > *').empty()
-    //$('#dashboard').addClass('active').trigger(c());
-    setTimeout(chartsJobs,700,'');
-})
-
-
-
+// FUNÇÃO PARA REDIMENSIONAR OS GRÁFICOS AO ALTERAR O ZOOM DA PÁGINA
 function resize(){
   if( $('#dashboardjobs').hasClass('active')) {
     $('.card-body > *').empty()
@@ -499,11 +447,14 @@ function resize(){
   }
 }
 
+// FUNÇÃO PARA MONSTAR OS GRAFICOS DO DASHBOARDS DO MENU 'JOBS VACANCIES'
 function chartsJobs(countrySelect){
   console.log('Charts')
-  $('.card-body > *').empty()
+  $('.card-body > *').empty() // LIMPANDO OS GRÁFICOS
 
   d3.csv('data/clusterReq2.csv', function(error, data){
+      
+      // FILTRANDO OS DADOS DE ACORDO COM O PAÍS SELECIONADO 
       data = data.filter(function(x) {  
         if(countrySelect == 'Todos' || countrySelect == ''){
           return x
@@ -511,8 +462,9 @@ function chartsJobs(countrySelect){
           return x.country == countrySelect
         }
       })
+
+      // FUNÇÃO PARA MONTAR O MAPA
       $.getJSON('data/t5.geojson', function (geojson) {
-          // Initiate the chart
           Highcharts.mapChart('clustermap', {
 
               chart: {
@@ -547,15 +499,13 @@ function chartsJobs(countrySelect){
                           fontWeight: 'bold'
                       }
                   },
-                  mapData: geojson, //Highcharts.maps['custom/usa-and-canada'],
+                  mapData: geojson,
                   tooltip: {
                       headerFormat: '',
                       pointFormat:  '{point.name}: <b>{series.name}</b>'
                   }
-
               }
           },
-
           series: [{
               name: 'Cluster 1',
               data: data.filter(function(x) {  return x.Cluster == '1'}).map(function(y){ return {code: y.state}})
@@ -572,84 +522,18 @@ function chartsJobs(countrySelect){
           ]
         });
       });
-      /*
-      Highcharts.mapChart('clustermap', {
-          chart: {
-              spacingBottom: 20
-          },
-          title: {
-              text: ''
-          },
-
-          legend: {
-              enabled: true
-          },
-
-           mapNavigation: {
-              enabled: true
-          },
-
-          plotOptions: {
-              map: {
-                  allAreas: false,
-                  joinBy: ['hc-a2', 'code'],
-                  dataLabels: {
-                      enabled: true,
-                      color: '#FFFFFF',
-                      formatter: function () {
-                          if (this.point.properties && this.point.properties.labelrank.toString() < 5) {
-                              return this.point.properties['hc-a2'];
-                          }
-                      },
-                      format: null,
-                      style: {
-                          fontWeight: 'bold'
-                      }
-                  },
-                  mapData: Highcharts.maps['custom/usa-and-canada'],
-                  tooltip: {
-                      headerFormat: '',
-                      pointFormat:  '{point.name}: <b>{series.name}</b>'
-                  }
-
-              }
-          },
-
-          series: [{
-            name: 'Cluster 1',
-            data: data.filter(function(x) {  return x.Cluster == '1'}).map(function(y){ return {code: y.state}})
-          },{
-            name: 'Cluster 2',
-            data: data.filter(function(x) {  return x.Cluster == '2'}).map(function(y){ return {code: y.state}})
-         },{
-            name: 'Cluster 3',
-            data: data.filter(function(x) {  return x.Cluster == '3'}).map(function(y){ return {code: y.state}})
-         },{
-            name: 'Cluster 4',
-            data: data.filter(function(x) {  return x.Cluster == '4'}).map(function(y){ return {code: y.state}})
-         }
-        ]
-      });
-      */
   });
 
 
-  var parseTime = d3.timeParse("%Y-%m-%d"); //d3.timeParse("%d-%b-%y");
-
-
-  //d3.csv("data/dadosFinal.csv", function(d) {
-      //console.log('da = ', d.dateClean)
-      //d.dateClean = parseTime(d.dateClean);
-      //d.count = +d.close;
-      //return d;
-    //}, function(error, data) {
-      //if (error) throw error;
-      //console.log(data)
-
+      // PEGANDO OS DADOS jobs DA LISTA 'dados'
       var data = dados.jobs
 
-      var format = d3.format(",d"); 
+
+/******** MONTANDO INFORMAÇÕES NÚMERICAS NOS BOXES  ****************************/
+      //SELECIONANDO DIV 
       var div2 = d3.select('#boxnumbertwo')
+
+      // AGRUPANDO PAÍSES E FAZENDO A CONTAGEM
       var countCountry = group(data,['country'])
       d3.select('.boxtwo .card-body-icon').append('i').classed('fa fa-fw fa-globe', true)
       
@@ -683,116 +567,110 @@ function chartsJobs(countrySelect){
       //TOTAL DE INSTITUIÇÕES PARTICIPANTES
       var div1 = d3.select('#boxnumber')
       
-      d3.select('.boxone .card-body-icon').append('i').classed('fa fa-fw fa-database', true)   
+      d3.select('.boxone .card-body-icon').append('i').classed('fa fa-fw fa-database', true)
+      //CHAMANDO A FUNÇÃO PARA MONTAR BOX 
       boxNumber2.call(div1, {docs: data, title: "Jobs Vacancies"})
 
       //Number of jobs in initial page
       d3.select('.numbjobs').text(data.length.toLocaleString('de-DE'))
 
-
+      //SELECTIONANDO DIV
       var div2 = d3.select('#boxnumberthird')
       
+      // AGRUPANDO CIDADES E FAZENDO CONTAGEM
       var countCities = group(data,['city'])
       d3.select('.boxthird .card-body-icon').append('i').classed('fa fa-fw fa-location-arrow ', true)   
-
+      //CHAMANDO A FUNÇÃO PARA MONTAR BOX
       boxNumber2.call(div2, {docs: countCities, title: "Cities"})
 
       var div2 = d3.select('#boxnumberfour')
       d3.select('.boxfour .card-body-icon').append('i').classed('fa fa-fw fa-building', true)   
 
+      //AGRUPANDO POSITION E FAZENDO CONTAGEM
       var countPositions = group(data,['position'])
       boxNumber2.call(div2, {docs: countPositions, title: "Positions"})
 
-      
-
+      // PEGANDO A DATA MAIS ATUAL DE COLETA DOS DADOS
       var dateUpdate = group(data, ['dateCollect'])
       dateUpdate.sort(function(x, y){        
         return d3.descending(x.value,y.value);
       })
-
-      console.log('date = ', dateUpdate)
-
       var divUpdate = d3.selectAll('.card-footer span').text(dateUpdate[0].value)
       
-      //MONTAR BOX/DIV COM INFORMAÇÕES NUMÉRICAS
-      /*boxNumber.call(div, {docs: data, title: "Total of Posts Jobs"})
-      console.log(data.length)
-         div.transition()
-              .duration(1500)
-              .on("start", function repeat() {
-                d3.active(this)
-                  .tween("text", function() {
-                      var that = d3.select(this),
-                          i = d3.interpolateNumber(that.text().replace(/,/g, ""), data.length);
-                      return function(t) { that.text(format(i(t))); };
-                  })
-                  .transition()
-                  .delay(2000)
-              });
-   */
+      
 
-
-      /******** GRAFICO DE LINHA ****************************/
+/******** GRAFICO DE LINHA ****************************/
+      //DEFININDO O VALOR DE w E h DE ACORDO COM O TAMANHO DA DIV (90% e 7x maior)
+      // DEFINIDO ASSIM PARA MONTAR OS GRÁFICOS RESPONSIVOS
       var w = parseInt(d3.select('#linechart').style('width')) *0.90,
           h = parseInt(d3.select('#linechart').style('height')) *7
           if(h == 0){
              h = w * 0.2
           }
-      console.log('w = ', w , h)
+
+      // CHAMANDO FUNÇÃO PARA INICIAR AS VARIAVEIS NECESSÁRIAS PARA MONTAR O GRÁFICO
+        // PASSANDO COMO PARAMETRO A id DIV, TITULO DA TIVE, LARGURA E ALTURA DO GRAFICO
       var line  = initVar.call(null, {id: '#linechart', titleDiv: "", class: '', width: w, height: h})
       
-
+      //AGRUPANDO OS DADOS POR DATA
       groupDate = group(data,['date'])
 
-      groupDate.map(function(x){      
-        //console.log(parseTime(x.value) )
+      //CONVERTENDO AS DATAS DE STRING PARA DATE
+      groupDate.map(function(x){
         x.value = parseTime(x.value)
       })
       
+      // ORDENAÇÃO DAS DATAS
       groupDate.sort(function(x, y){        
         return y.value - x.value;
       })
 
-      //console.log('csv = ', groupDate)
-
+      //CHAMANDO FUNÇÃO PARA CRIAR O GRÁFICO DE LINHAS
+        //PARAMETROS: g, dados e as margins
       lineChart.call(line.g, {data:groupDate, margins: line.margins})
 
+/******** GRAFICO DE BOLHAS ****************************/
       w = parseInt(d3.select('#bubblechart').style('width')) * 0.9,
       h = parseInt(d3.select('#bubblechart').style('height')) * 9
 
       var bolha = initVar.call(null, {id: '#bubblechart', titleDiv: "", class: '', width: w, height:h})
 
+      //CRIANDO ARRAY PARA ARMAZENAR SKILL SEPARADOS
       var arraySkill = []
+
+      //FAZENDO SLIPT DA SKILLS
       data.map(function(x){
         x.skills.split(' ').map(function(d){
-          //console.log(d)
           arraySkill.push({skill:d})
         })
       })
       var groupSkill = group(arraySkill,['skill'])
+
+      //RETORNANDO REGISTROS QUE NÃO SEJA VAZIO
       groupSkill = groupSkill.filter(function(x) {return x.value != "" })
       
-      
+      // RETORNANDO REGISTROS QUE TENHAM CONTAGEM ACIMA DE 15
       groupSkill = groupSkill.filter(function(x){return x.count > 15})
+
+      //ORDENANDO O ARRAY DE SKILLS
       groupSkill.sort(function(x,y){
         return y.count - x.count
       })
 
-
+      // AJUSTANDO AS MARGINS DA DIV QUE SERÁ CRIADO O GRÁFICO DE BOLHAS
       bolha.margins.margin.bottom = 100;
       bolha.margins.margin.left = 30;
 
-      //console.log(bolha.margins);
-
-
+      // INSERINDO ATRIBUTOS DE FORMATAÇÃO NO ELEMENTO DO GRÁFICO DE BOLHAS 
       bolha.g.attr("text-anchor","middle").attr('font-family',"sans-serif").attr('font-size',"10")
       bubbleChart.call(bolha.g, {data: groupSkill,margins: bolha.margins})
 
+/******** GRAFICO DE BARRAS ****************************/
+      //CAPTURANDO O TAMANHO DA DIV
       w = parseInt(d3.select('#barchart').style('width')) * 0.9 ,
-      h = parseInt(d3.select('#barchart').style('width')) * 0.5;
+      h = parseInt(d3.select('#barchart').style('width')) * 0.5;//É UTILIZADA O WIDTH PORQUE O HEIGTH NÃO É DEFINIDO 
 
-      //console.log('bar = ', parseInt(d3.select('#barchart').style('width')), parseInt(d3.select('#barchart').style('width')))
-
+      
       var bar = initVar.call(null, {id: '#barchart', titleDiv: "", class: '', width: w, height:h})    
       
       var groupJobs = group(data, ['position'])
@@ -807,14 +685,16 @@ function chartsJobs(countrySelect){
         return y.count - x.count;
       })
       groupJobs = groupJobs.slice(0,5)
-      //groupJobs.sort(function(x,y){      return x.count - y.count;    })
-      //barGraph2.call(g, {data: countType, axis: {x : x, y : y}, margins: vars,horizontal: true, setFill: true});
-
+      
+      //CHAMANDO FUNÇÃO QUE MONTA O GRÁFICO DE BARRAS
+        //PARAMETROS: elemento G, dados, marnins, axis, se as barras serão horizontal(true) ou vertical(false) E se as barras serão de cor sólida de acordo com CSS criado
+          //se FALSE irá usar uma escala de cor (azul)
       barChart.call(bar.g, {data: groupJobs, margins: bar, axis: {x : x, y : y},horizontal: false, setFill: true } )
 
-
+/******** GRAFICO DE PIZZA LANGUAGES****************************/
       var pie = initVar.call(null, {id: '#piechart', titleDiv: "", class: '', width: '300', height:'250'})    
       
+
       var arrayLang = []
       data.map(function(x){      
         x.language.split(' ').map(function(d){      
@@ -826,7 +706,7 @@ function chartsJobs(countrySelect){
 
       pieChar.call(pie.g, {data: groupLang, margins: pie})
 
-
+/******** GRAFICO DE PIZZA EDUCATION ****************************/
       var pieEdu = initVar.call(null, {id: '#piecharttwo', titleDiv: "", class: '', width: '300', height:'250'})    
 
       var arrayEdu = []
@@ -842,76 +722,56 @@ function chartsJobs(countrySelect){
 
 
 
-      //*-******************/
+/******** GRAFICO TREEMAP ****************************/
       w = parseInt(d3.select('#treemap').style('width')) * 0.9,
       h = parseInt(d3.select('#treemap').style('height')) * 12
       var barCity = initVar.call(null, {id: '#treemap', titleDiv: "", class: 'treemap', width: w, height:h})    
 
       var groupCity = group(data, ['city'])
       
-      
-      var x = d3.scaleBand().range([0,barCity.margins.width]).padding(0.1),//d3.scaleLinear().rangeRound([0,vars.margins.width]),
-          y = d3.scaleLinear().rangeRound([barCity.margins.height,0]);//d3.scaleBand().range([vars.margins.height, 0]).padding(0.1);
+      var x = d3.scaleBand().range([0,barCity.margins.width]).padding(0.1),
+          y = d3.scaleLinear().rangeRound([barCity.margins.height,0]);
 
       groupCity.sort(function(x,y){
         return y.count - x.count;
       })
       groupCity = groupCity.filter(function(x) {return x.value != 'ND'}).slice(0,20)
-      //groupJobs.sort(function(x,y){      return x.count - y.count;    })
-      //barGraph2.call(g, {data: countType, axis: {x : x, y : y}, margins: vars,horizontal: true, setFill: true});
+      
+      treeMap.call(barCity.g, {data: groupCity, margins: barCity.margins})  
 
-      //barChart.call(barCity.g, {data: groupCity, margins: barCity, axis: {x : x, y : y},horizontal: false, setFill: true } )
-      treeMap.call(barCity.g, {data: groupCity, margins: barCity.margins})
-
-  //});
-
-  
-} //FIM FUNÇÃO CHARTSJOBS
+} //FIM FUNÇÃO chartsjobs
 
 
-//*** CHARTS OF COMPANIES REVIEWS **** //
+//CHAMANDO FUNÇÃO PARA MONTAR GRÁFICOS A SELECIONA O MENU companies Reviews
+$('#menudashboardreviews').on('click',function(e){
+    setTimeout(chartsReviews,700,'');
+})
+
+//REFAZENDO GRÁFICOS AO SELECIONA UMA EMPRESA NO COMBO
 $('#selcompany').on('change',function(){
   chartsReviews(this.value)
 })
 
-var tooltip = d3.select("body").append("div").attr("class", "toolTip"),
-    bisectDate = d3.bisector(function(d) { return d.year; }).left;
 
-$('#menudashboardreviews').on('click',function(e){
-    //$('.card-body > *').empty()
-    //$('#dashboard').addClass('active').trigger(c());
-    setTimeout(chartsReviews,700,'');
-})
-
+//FUNÇÃO PARA MONTAR OS GRÁFICOS DE REVIEWS.
+ // PARAMETRO: empresa selecionada no combo
 function chartsReviews(companySelect){
   console.log('Charts')
   $('.card-body > *').empty()
 
-  var parseTime = d3.timeParse("%Y-%m-%d"); //d3.timeParse("%d-%b-%y");
-  var format    = d3.format(",d"); 
-
-
-  //d3.csv("data/reviewGlassDClean.csv", function(data) {
-      //console.log('da = ', d.dateClean)
-      //d.dateClean = parseTime(d.dateClean);
-      //d.count = +d.close;
-      //return d;
-    //}, function(error, data) {
-      //if (error) throw error;
-      //console.log(data)
-
-      //TOTAL DE INSTITUIÇÕES PARTICIPANTES
-
+      // CAPTURANDO REVIEWS DA LISTA 'dados'
       data = dados.reviews
 
-      var div2 = d3.select('#boxtworeview')
+/******** INFORMAÇÕES NUMÉRICAS (BOXES) ****************************/
+      var div2         = d3.select('#boxtworeview')
       var countCompany = group(data,['company'])
-      var scaleColor = d3.scaleSequential(d3["interpolateBlues"]).domain([-1, 5]);
+      var scaleColor   = d3.scaleSequential(d3["interpolateBlues"]).domain([-1, 5]);
 
       d3.select('.boxtworeview .card-body-icon').append('i').classed('fa fa-fw fa-building', true)
-      d3.select('.boxtworeview').style('background-color', scaleColor(2))
-      d3.select('#selcompany').style('background-color', scaleColor(2))
+      d3.select('.boxtworeview').style('background-color', scaleColor(2))//ALTERANDO A COR DA DIV. SERÁ UTILIZADA ESCALA DE COR AZUL
+      d3.select('#selcompany').style('background-color', scaleColor(2))//ALTERANDO A COR DA DIV. SERÁ UTILIZADA ESCALA DE COR AZUL
      
+
       $('#selcompany > *').remove();
       $('#selcompany').append($('<option>',{
           value: 'Todos',
@@ -941,22 +801,22 @@ function chartsReviews(companySelect){
       d3.select('.boxonereview .card-body-icon').append('i').classed('fa fa-fw fa-database', true)
                d3.select('.boxonereview').style('background-color', scaleColor(1))
 
-      
       boxNumber2.call(div1, {docs: data, title: "Reviews"})
 
       
-      var div3 = d3.select('#boxfourreview')
+      var div3         = d3.select('#boxfourreview')
+
+      //CALCULANDO AS MÉTRICAS DE RATING(media, soma, min, max)
       var metricRating = groupMetric(data,'company','rating')
-      var title1 = 'Mean Rating'
+      var title1 = 'Mean Rating' //TITULO DA DIV
       d3.select('.boxthirdreview .card-body-icon').append('i').classed('fa fa-fw fa-calculator ', true)   
       d3.select('.boxthirdreview').style('background-color', scaleColor(3))
 
-      
       var format = d3.format(".3n");
       
       var avg = d3.mean(metricRating, function(x){ return x.count.avg })
-      console.log('reting = ', data)
 
+      // INSERINDO INFORMAÇÕES NA DIV COM EFEITOS DE TRANSITIONS
       div3.append('span')   
           .transition()
           .duration(1500)
@@ -972,7 +832,6 @@ function chartsReviews(companySelect){
           });
 
       var div4 = d3.select('#boxthirdreview')
-
       d3.select('.boxfourreview .card-body-icon').append('i').classed('fa fa-fw fa-building', true)  
       d3.select('.boxfourreview').style('background-color', scaleColor(4))
 
@@ -1010,20 +869,21 @@ function chartsReviews(companySelect){
                     .delay(2000)
                 });
 
+
       var dateUpdate = group(data, ['dateCollect'])
       dateUpdate.sort(function(x, y){        
         return d3.descending(x.value,y.value);
       })
       
       var divUpdate = d3.selectAll('.card-footer span').text(dateUpdate[0].value)
-      //boxNumber2.call(div3, {docs: metricRating, title: "Cities"})
 
-     
-      w = parseInt(d3.select('#pisitionchart').style('width')) * 0.9 ,
-      h = parseInt(d3.select('#pisitionchart').style('width')) * 0.25;
+
+/******** GRÁFICO DE BARRAS POSITIONS ****************************/
+      w = parseInt(d3.select('#positionchart').style('width')) * 0.9 ,
+      h = parseInt(d3.select('#positionchart').style('width')) * 0.25;
 
       
-      var barPosition = initVar.call(null, {id: '#pisitionchart', titleDiv: "", class: '', width: w, height:h})    
+      var barPosition = initVar.call(null, {id: '#positionchart', titleDiv: "", class: '', width: w, height:h})    
       
       var x = d3.scaleBand().range([0,barPosition.margins.width]).padding(0.1),
           //x = d3.scaleLinear().rangeRound([0,barPosition.margins.width]),
@@ -1040,17 +900,12 @@ function chartsReviews(companySelect){
       })
   
       groupPosit = groupPosit.slice(0,10)
-      
-
-
+    
       barChart.call(barPosition.g, {data: groupPosit, margins: barPosition, axis: {x : x, y : y},horizontal: false, setFill: true } )  
 
-
-
+/******** GRÁFICO DE BARRA DATE(YEAR) ****************************/
       w = parseInt(d3.select('#barchartreviews').style('width')) * 0.9 ,
       h = parseInt(d3.select('#barchartreviews').style('width')) * 0.25;
-
-      //console.log('bar = ', parseInt(d3.select('#barchartreviews').style('width')), parseInt(d3.select('#barchartreviews').style('width')))
 
       var bar = initVar.call(null, {id: '#barchartreviews', titleDiv: "", class: '', width: w, height:h})    
       
@@ -1058,13 +913,13 @@ function chartsReviews(companySelect){
           //x = d3.scaleLinear().rangeRound([0,bar.margins.width]),
           y = d3.scaleLinear().rangeRound([bar.margins.height,0])
           //y = d3.scaleBand().range([bar.margins.height, 0]).padding(0.1);
+
       var years = data.map(function(x){
         return {value: new Date(x.date).getFullYear() }
       })
             
       groupYear = group(years,['value'])
       groupYear = groupYear.filter(function(x){ return x.value != 'NaN'})
-
       
       groupYear.sort(function(x, y){        
         return x.value - y.value;
@@ -1072,6 +927,7 @@ function chartsReviews(companySelect){
 
       barChart.call(bar.g, {data: groupYear, margins: bar, axis: {x : x, y : y},horizontal: false, setFill: true } )
 
+/******** GRÁFICO DE PIZZA RECOMMENDS ****************************/
       var pieRecommend = initVar.call(null, {id: '#pierecommend', titleDiv: "", class: '', width: '300', height:'250'})    
       
       var groupRecommend = group(data,['recommend'])
@@ -1079,14 +935,13 @@ function chartsReviews(companySelect){
 
       pieChar.call(pieRecommend.g, {data: groupRecommend, margins: pieRecommend})
 
-
+/******** GRÁFICO TREEMAP CITY ****************************/
       w = parseInt(d3.select('#treemapreview').style('width')) * 0.9,
       h = parseInt(d3.select('#treemapreview').style('height')) * 12
       var barCity = initVar.call(null, {id: '#treemapreview', titleDiv: "", class: 'treemap', width: w, height:h})    
 
       var groupCity = group(data, ['city'])
-      
-      
+            
       var x = d3.scaleBand().range([0,barCity.margins.width]).padding(0.1),//d3.scaleLinear().rangeRound([0,vars.margins.width]),
           y = d3.scaleLinear().rangeRound([barCity.margins.height,0]);//d3.scaleBand().range([vars.margins.height, 0]).padding(0.1);
 
@@ -1094,12 +949,10 @@ function chartsReviews(companySelect){
         return y.count - x.count;
       })
       groupCity = groupCity.filter(function(x) {return x.value != 'NI'}).slice(0,20)
-      //groupJobs.sort(function(x,y){      return x.count - y.count;    })
-      //barGraph2.call(g, {data: countType, axis: {x : x, y : y}, margins: vars,horizontal: true, setFill: true});
-
-      //barChart.call(barCity.g, {data: groupCity, margins: barCity, axis: {x : x, y : y},horizontal: false, setFill: true } )
+      
       treeMap.call(barCity.g, {data: groupCity, margins: barCity.margins})
 
+/******** GRÁFICO DE BOLHAS PROS ****************************/
       w = parseInt(d3.select('#bubblepros').style('width')) * 0.9,
       h = parseInt(d3.select('#bubblepros').style('height')) * 9
 
@@ -1108,30 +961,26 @@ function chartsReviews(companySelect){
       var arrayPros = []
       data.map(function(x){
         x.pros.split(' ').map(function(d){
-          //console.log(d)
           arrayPros.push({pros:d})
         })
       })
       var groupProsComents = group(arrayPros,['pros'])
       groupProsComents = groupProsComents.filter(function(x) {return x.value != "" })
       
-      
-      //groupProsComents = groupProsComents.filter(function(x){return x.count > 1500})
+      // RECUPERANDO AS 150 PRIMEIRAS PALAVRAS
       groupProsComents = groupProsComents.slice(0,150)
       groupProsComents.sort(function(x,y){
         return y.count - x.count
       })
 
-
       bubPros.margins.margin.bottom = 100;
       bubPros.margins.margin.left = 30;
 
-      //console.log(bolha.margins);
-
-
+      //INSERINDO ATRIBUTOS NO ELEMENTO
       bubPros.g.attr("text-anchor","middle").attr('font-family',"sans-serif").attr('font-size',"10")
       bubbleChart.call(bubPros.g, {data: groupProsComents,margins: bubPros.margins, setColor: 'interpolateGreens'})
 
+/******** GRÁFICO DE BOLHAS CONS ****************************/
       w = parseInt(d3.select('#bubblecons').style('width')) * 0.9,
       h = parseInt(d3.select('#bubblecons').style('height')) * 9
 
@@ -1140,35 +989,26 @@ function chartsReviews(companySelect){
       var arrayCons = []
       data.map(function(x){
         x.cons.split(' ').map(function(d){
-          //console.log(d)
           arrayCons.push({pros:d})
         })
       })
       var groupConsComents = group(arrayCons,['pros'])
       groupConsComents = groupConsComents.filter(function(x) {return x.value != "" })
-      
-      
-      //groupProsComents = groupProsComents.filter(function(x){return x.count > 1500})
       groupConsComents = groupConsComents.slice(0,150)
       groupConsComents.sort(function(x,y){
         return y.count - x.count
       })
 
-
       bubCons.margins.margin.bottom = 100;
       bubCons.margins.margin.left = 30;
-
-      //console.log(bolha.margins);
-
 
       bubCons.g.attr("text-anchor","middle").attr('font-family',"sans-serif").attr('font-size',"10")
       bubbleChart.call(bubCons.g, {data: groupConsComents,margins: bubCons.margins, setColor: 'interpolateReds'})
 
 
-  //});//FIM D3.CSV
 } // FIM FUNÇÃO CHARTSREVIEWS
 
-//var scaleColor = d3.scaleSequential(d3["interpolateBlues"]).domain([0, d3.max(params.data, function(d) { return d.count; })]);
+
   $("#sidenavToggler").click(function(e) {
     e.preventDefault();
     $("body").toggleClass("sidenav-toggled");
