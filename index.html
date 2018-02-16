@@ -14,6 +14,9 @@
   <script type="text/javascript" src='js/cloud.js'></script> 
   <script type="text/javascript" src='js/bootstrap/bootstrap.min.js'></script> 
 
+  <script type="text/javascript" src='js/jobs.js'></script>
+  <script type="text/javascript" src='js/reviews.js'></script>
+
   <script src="https://code.highcharts.com/maps/highmaps.js"></script>
   <script src="https://code.highcharts.com/maps/modules/data.js"></script>
   <script src="https://code.highcharts.com/mapdata/custom/europe.js"></script>
@@ -25,6 +28,7 @@
   <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
 
   <link rel="stylesheet" type="text/css" href="css/charts.css">
+  <link rel="stylesheet" type="text/css" href="css/custom.css">
 
   <link href="css/sb-admin.css" rel="stylesheet">
 
@@ -33,32 +37,8 @@
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   
   <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
-<style type="text/css">
-  .card.text-whit{e
-    box-shadow: 7px 7px 5px #ccc;
-  }
-  .fade.in {
-    opacity: 1;
-  }
-
-  h1 {
-    border-bottom: 3px solid #ccc;
-    padding: 0 0 10px 0;
-  }
-
-  .card-body{
-    text-align: center;
-  }
-
-  .dropdown-menu-center {
-    left: 50%;
-    right: auto;
-    text-align: center;
-    transform: translate(-50%, 0);
-  }
-</style>
-	
 </head>
 <body class="fixed-nav sticky-footer bg-dark" id="page-top" >
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
@@ -131,15 +111,17 @@
             <h1>Jobs Vacancies Analysis</h1>
           </div>
           <div class="col-md-10">
-            <p> This is a web app to analysis jobs vacancies data, with dashboards about 
-              posts vacancies by date, skills (tech skills, languages and educations), jobs by cities, positions, cluster data mining of requeriments.</p>
-            <p>The date were collect in Glassdoor.com by web scrapping.</p>
+            <p> This is a web app to analysis jobs vacancies and companies reviews data, with dashboards about 
+              posts vacancies by date, skills (tech skills, languages and educations), jobs by cities, positions, cluster data mining of requeriments, and posts reviews by date, words most commented (pros and cons), cities and reviewer position</p>
+            <p>The data were collected in Glassdoor, Love Mondays and Indeed by web scrapping.</p>
             <div class="alert alert-success">
               <p><strong> <span class='numbjobs'> More of 1,000 </span> jobs vacancies.</strong></p>
+              <p><strong> <span class='numbreviews'> More of 100,000 </span> companies reviews.</strong></p>
             </div>
           </div>
       </div>
     </div>
+
     <div id='dashboardjobs' class="container-fluid tab-pane fade  " role="tabpanel">
       <!-- Breadcrumbs-->
       <ol class="breadcrumb">
@@ -364,10 +346,13 @@
         </div>
         <div class="col-md 10">
           <p>
-            This application aims to make analysis of job vacancies in data science.
+            This application aims to make analysis of job vacancies for data science and technology company reviews.
           </p>
           <p>
-            The data was collected by doing a web scrape on the employment site, <a href='https://www.glassdoor.com/index.htm'> glassdoor.com </a>. This data has undergone a cleanup and transformation process and has also been applied clustering data mining algorithm to identify provinces that have similar requirements.
+            The data was collected by doing a web scrapping on the employment site, <a href='https://www.glassdoor.com/index.htm'> glassdoor</a>, <a href='https://www.indeed.com'> indeed</a> and 
+            <a href='https://www.lovemondays.com.br'> lovemondays</a> . <br>
+            The code can be acessed on the <a href='https://www.github.com/gabriellimagomes15'> github </a>f
+            <!--This data has undergone a cleanup and transformation process and has also been applied clustering data mining algorithm to identify provinces that have similar requirements.-->
           </p>
         </div>
       </div>
@@ -415,598 +400,65 @@
     </a>
 
 <script>
-  
-// CRIANDO OBJETO PARA GERAR OS 'tooltip' DOS GRÁFICOS
-var tooltip = d3.select("body").append("div").attr("class", "toolTip");
-
-// CRIANDO OBJETO PARA CONVERTER DATAS
-var parseTime = d3.timeParse("%Y-%m-%d");
-
-// CRIANDO OBJETO PARA FORMATAR NÚMERO
-var format = d3.format(",d"); 
-
-
-//CHAMANDO A FUNÇÃO PARA CARREGAR OS DADOS 
-readData();
-
-// FUNÇÃO PARA MONSTAR OS GRÁFICOS AO SELECIONAR O MENU 'DASHBOARDS JOBS VACANCIES'
-$('#menudashboardjobs').on('click',function(e){
-    setTimeout(chartsJobs,700,'');
-})
-
-// FUNÇÃO PARA REFAZER OS GRÁFICOS AO SELECIONAR UM PAÍS
-$('#selcountry').on('change',function(){
-  chartsJobs(this.value)
-})
-
-// FUNÇÃO PARA REDIMENSIONAR OS GRÁFICOS AO ALTERAR O ZOOM DA PÁGINA
-function resize(){
-  if( $('#dashboardjobs').hasClass('active')) {
-    $('.card-body > *').empty()
-    chartsJobs($('#selcountry').val()) 
-  }
-}
-
-// FUNÇÃO PARA MONSTAR OS GRAFICOS DO DASHBOARDS DO MENU 'JOBS VACANCIES'
-function chartsJobs(countrySelect){
-  console.log('Charts')
-  $('.card-body > *').empty() // LIMPANDO OS GRÁFICOS
-
-  d3.csv('data/clusterReq2.csv', function(error, data){
-      
-      // FILTRANDO OS DADOS DE ACORDO COM O PAÍS SELECIONADO 
-      data = data.filter(function(x) {  
-        if(countrySelect == 'Todos' || countrySelect == ''){
-          return x
-        }else{
-          return x.country == countrySelect
-        }
-      })
-
-      // FUNÇÃO PARA MONTAR O MAPA
-      $.getJSON('data/t5.geojson', function (geojson) {
-          Highcharts.mapChart('clustermap', {
-
-              chart: {
-              spacingBottom: 20
-          },
-          title: {
-              text: ''
-          },
-
-          legend: {
-              enabled: true
-          },
-
-           mapNavigation: {
-              enabled: true
-          },
-          plotOptions: {
-              map: {
-                  allAreas: false,
-                  joinBy: ['sigla', 'code'],
-                  dataLabels: {
-                      enabled: true,
-                      color: '#FFFFFF',
-                      formatter: function () {
-                          if (this.point.properties ) {
-                              var label = this.point.properties['sigla'].replace('_br','')
-                              return label;
-                          }
-                      },
-                      format: null,
-                      style: {
-                          fontWeight: 'bold'
-                      }
-                  },
-                  mapData: geojson,
-                  tooltip: {
-                      headerFormat: '',
-                      pointFormat:  '{point.name}: <b>{series.name}</b>'
-                  }
-              }
-          },
-          series: [{
-              name: 'Cluster 1',
-              data: data.filter(function(x) {  return x.Cluster == '1'}).map(function(y){ return {code: y.state}})
-            },{
-              name: 'Cluster 2',
-              data: data.filter(function(x) {  return x.Cluster == '2'}).map(function(y){ return {code: y.state}})
-           },{
-              name: 'Cluster 3',
-              data: data.filter(function(x) {  return x.Cluster == '3'}).map(function(y){ return {code: y.state}})
-           },{
-              name: 'Cluster 4',
-              data: data.filter(function(x) {  return x.Cluster == '4'}).map(function(y){ return {code: y.state}})
-           }
-          ]
-        });
-      });
-  });
-
-
-      // PEGANDO OS DADOS jobs DA LISTA 'dados'
-      var data = dados.jobs
-
-
-/******** MONTANDO INFORMAÇÕES NÚMERICAS NOS BOXES  ****************************/
-      //SELECIONANDO DIV 
-      var div2 = d3.select('#boxnumbertwo')
-
-      // AGRUPANDO PAÍSES E FAZENDO A CONTAGEM
-      var countCountry = group(data,['country'])
-      d3.select('.boxtwo .card-body-icon').append('i').classed('fa fa-fw fa-globe', true)
-      
-      $('#selcountry > *').remove();
-      $('#selcountry').append($('<option>',{
-          value: 'Todos',
-          text: 'Todos'
-      })) 
-      $.each(countCountry,function(x,y){
-        $('#selcountry').append($('<option>',{
-          value: y.value,
-          text: y.value
-        }))
-      })
-      if(countrySelect != ''){
-        $('#selcountry').val(countrySelect);
-      }
-
-      boxNumber2.call(div2, {docs: countCountry, title: "Countries"})
-      
-
-      data = data.filter(function(x) {
-        if(countrySelect == 'Todos' || countrySelect == ''){
-          return x
-        }else{
-          return x.country == countrySelect
-        }
-      })
-
-
-      //TOTAL DE INSTITUIÇÕES PARTICIPANTES
-      var div1 = d3.select('#boxnumber')
-      
-      d3.select('.boxone .card-body-icon').append('i').classed('fa fa-fw fa-database', true)
-      //CHAMANDO A FUNÇÃO PARA MONTAR BOX 
-      boxNumber2.call(div1, {docs: data, title: "Jobs Vacancies"})
-
-      //Number of jobs in initial page
-      d3.select('.numbjobs').text(data.length.toLocaleString('de-DE'))
-
-      //SELECTIONANDO DIV
-      var div2 = d3.select('#boxnumberthird')
-      
-      // AGRUPANDO CIDADES E FAZENDO CONTAGEM
-      var countCities = group(data,['city'])
-      d3.select('.boxthird .card-body-icon').append('i').classed('fa fa-fw fa-location-arrow ', true)   
-      //CHAMANDO A FUNÇÃO PARA MONTAR BOX
-      boxNumber2.call(div2, {docs: countCities, title: "Cities"})
-
-      var div2 = d3.select('#boxnumberfour')
-      d3.select('.boxfour .card-body-icon').append('i').classed('fa fa-fw fa-building', true)   
-
-      //AGRUPANDO POSITION E FAZENDO CONTAGEM
-      var countPositions = group(data,['position'])
-      boxNumber2.call(div2, {docs: countPositions, title: "Positions"})
-
-      // PEGANDO A DATA MAIS ATUAL DE COLETA DOS DADOS
-      var dateUpdate = group(data, ['dateCollect'])
-      dateUpdate.sort(function(x, y){        
-        return d3.descending(x.value,y.value);
-      })
-      var divUpdate = d3.selectAll('.card-footer span').text(dateUpdate[0].value)
-      
-      
-
-/******** GRAFICO DE LINHA ****************************/
-      //DEFININDO O VALOR DE w E h DE ACORDO COM O TAMANHO DA DIV (90% e 7x maior)
-      // DEFINIDO ASSIM PARA MONTAR OS GRÁFICOS RESPONSIVOS
-      var w = parseInt(d3.select('#linechart').style('width')) *0.90,
-          h = parseInt(d3.select('#linechart').style('height')) *7
-          if(h == 0){
-             h = w * 0.2
-          }
-
-      // CHAMANDO FUNÇÃO PARA INICIAR AS VARIAVEIS NECESSÁRIAS PARA MONTAR O GRÁFICO
-        // PASSANDO COMO PARAMETRO A id DIV, TITULO DA TIVE, LARGURA E ALTURA DO GRAFICO
-      var line  = initVar.call(null, {id: '#linechart', titleDiv: "", class: '', width: w, height: h})
-      
-      //AGRUPANDO OS DADOS POR DATA
-      groupDate = group(data,['date'])
-
-      //CONVERTENDO AS DATAS DE STRING PARA DATE
-      groupDate.map(function(x){
-        x.value = parseTime(x.value)
-      })
-      
-      // ORDENAÇÃO DAS DATAS
-      groupDate.sort(function(x, y){        
-        return y.value - x.value;
-      })
-
-      //CHAMANDO FUNÇÃO PARA CRIAR O GRÁFICO DE LINHAS
-        //PARAMETROS: g, dados e as margins
-      lineChart.call(line.g, {data:groupDate, margins: line.margins})
-
-/******** GRAFICO DE BOLHAS ****************************/
-      w = parseInt(d3.select('#bubblechart').style('width')) * 0.9,
-      h = parseInt(d3.select('#bubblechart').style('height')) * 9
-
-      var bolha = initVar.call(null, {id: '#bubblechart', titleDiv: "", class: '', width: w, height:h})
-
-      //CRIANDO ARRAY PARA ARMAZENAR SKILL SEPARADOS
-      var arraySkill = []
-
-      //FAZENDO SLIPT DA SKILLS
-      data.map(function(x){
-        x.skills.split(' ').map(function(d){
-          arraySkill.push({skill:d})
-        })
-      })
-      var groupSkill = group(arraySkill,['skill'])
-
-      //RETORNANDO REGISTROS QUE NÃO SEJA VAZIO
-      groupSkill = groupSkill.filter(function(x) {return x.value != "" })
-      
-      // RETORNANDO REGISTROS QUE TENHAM CONTAGEM ACIMA DE 15
-      groupSkill = groupSkill.filter(function(x){return x.count > 15})
-
-      //ORDENANDO O ARRAY DE SKILLS
-      groupSkill.sort(function(x,y){
-        return y.count - x.count
-      })
-
-      // AJUSTANDO AS MARGINS DA DIV QUE SERÁ CRIADO O GRÁFICO DE BOLHAS
-      bolha.margins.margin.bottom = 100;
-      bolha.margins.margin.left = 30;
-
-      // INSERINDO ATRIBUTOS DE FORMATAÇÃO NO ELEMENTO DO GRÁFICO DE BOLHAS 
-      bolha.g.attr("text-anchor","middle").attr('font-family',"sans-serif").attr('font-size',"10")
-      bubbleChart.call(bolha.g, {data: groupSkill,margins: bolha.margins})
-
-/******** GRAFICO DE BARRAS ****************************/
-      //CAPTURANDO O TAMANHO DA DIV
-      w = parseInt(d3.select('#barchart').style('width')) * 0.9 ,
-      h = parseInt(d3.select('#barchart').style('width')) * 0.5;//É UTILIZADA O WIDTH PORQUE O HEIGTH NÃO É DEFINIDO 
-
-      
-      var bar = initVar.call(null, {id: '#barchart', titleDiv: "", class: '', width: w, height:h})    
-      
-      var groupJobs = group(data, ['position'])
-      
-      
-      var x = d3.scaleBand().range([0,bar.margins.width]).padding(0.1),
-          //x = d3.scaleLinear().rangeRound([0,bar.margins.width]),
-          y = d3.scaleLinear().rangeRound([bar.margins.height,0])
-          //y = d3.scaleBand().range([bar.margins.height, 0]).padding(0.1);
-
-      groupJobs.sort(function(x,y){
-        return y.count - x.count;
-      })
-      groupJobs = groupJobs.slice(0,5)
-      
-      //CHAMANDO FUNÇÃO QUE MONTA O GRÁFICO DE BARRAS
-        //PARAMETROS: elemento G, dados, marnins, axis, se as barras serão horizontal(true) ou vertical(false) E se as barras serão de cor sólida de acordo com CSS criado
-          //se FALSE irá usar uma escala de cor (azul)
-      barChart.call(bar.g, {data: groupJobs, margins: bar, axis: {x : x, y : y},horizontal: false, setFill: true } )
-
-/******** GRAFICO DE PIZZA LANGUAGES****************************/
-      var pie = initVar.call(null, {id: '#piechart', titleDiv: "", class: '', width: '300', height:'250'})    
-      
-
-      var arrayLang = []
-      data.map(function(x){      
-        x.language.split(' ').map(function(d){      
-          arrayLang.push({language:d})
-        })
-      })
-      var groupLang = group(arrayLang,['language'])
-      groupLang = groupLang.filter(function(x) {return x.value != "" })
-
-      pieChar.call(pie.g, {data: groupLang, margins: pie})
-
-/******** GRAFICO DE PIZZA EDUCATION ****************************/
-      var pieEdu = initVar.call(null, {id: '#piecharttwo', titleDiv: "", class: '', width: '300', height:'250'})    
-
-      var arrayEdu = []
-      data.map(function(x){      
-        x.education.split(' ').map(function(d){      
-          arrayEdu.push({education:d})
-        })
-      })
-      var groupLang = group(arrayEdu,['education'])
-      groupLang = groupLang.filter(function(x) {return x.value != "" })
-
-      pieChar.call(pieEdu.g, {data: groupLang, margins: pieEdu})
-
-
-
-/******** GRAFICO TREEMAP ****************************/
-      w = parseInt(d3.select('#treemap').style('width')) * 0.9,
-      h = parseInt(d3.select('#treemap').style('height')) * 12
-      var barCity = initVar.call(null, {id: '#treemap', titleDiv: "", class: 'treemap', width: w, height:h})    
-
-      var groupCity = group(data, ['city'])
-      
-      var x = d3.scaleBand().range([0,barCity.margins.width]).padding(0.1),
-          y = d3.scaleLinear().rangeRound([barCity.margins.height,0]);
-
-      groupCity.sort(function(x,y){
-        return y.count - x.count;
-      })
-      groupCity = groupCity.filter(function(x) {return x.value != 'ND'}).slice(0,20)
-      
-      treeMap.call(barCity.g, {data: groupCity, margins: barCity.margins})  
-
-} //FIM FUNÇÃO chartsjobs
-
-
-//CHAMANDO FUNÇÃO PARA MONTAR GRÁFICOS A SELECIONA O MENU companies Reviews
-$('#menudashboardreviews').on('click',function(e){
-    setTimeout(chartsReviews,700,'');
-})
-
-//REFAZENDO GRÁFICOS AO SELECIONA UMA EMPRESA NO COMBO
-$('#selcompany').on('change',function(){
-  chartsReviews(this.value)
-})
-
-
-//FUNÇÃO PARA MONTAR OS GRÁFICOS DE REVIEWS.
- // PARAMETRO: empresa selecionada no combo
-function chartsReviews(companySelect){
-  console.log('Charts')
-  $('.card-body > *').empty()
-
-      // CAPTURANDO REVIEWS DA LISTA 'dados'
-      data = dados.reviews
-
-/******** INFORMAÇÕES NUMÉRICAS (BOXES) ****************************/
-      var div2         = d3.select('#boxtworeview')
-      var countCompany = group(data,['company'])
-      var scaleColor   = d3.scaleSequential(d3["interpolateBlues"]).domain([-1, 5]);
-
-      d3.select('.boxtworeview .card-body-icon').append('i').classed('fa fa-fw fa-building', true)
-      d3.select('.boxtworeview').style('background-color', scaleColor(2))//ALTERANDO A COR DA DIV. SERÁ UTILIZADA ESCALA DE COR AZUL
-      d3.select('#selcompany').style('background-color', scaleColor(2))//ALTERANDO A COR DA DIV. SERÁ UTILIZADA ESCALA DE COR AZUL
-     
-
-      $('#selcompany > *').remove();
-      $('#selcompany').append($('<option>',{
-          value: 'Todos',
-          text: 'Todos'
-      })) 
-      $.each(countCompany,function(x,y){
-        $('#selcompany').append($('<option>',{
-          value: y.value,
-          text: y.value
-        }))
-      })
-      if(companySelect != ''){
-        $('#selcompany').val(companySelect);
-      }
-
-      boxNumber2.call(div2, {docs: countCompany, title: "Companies"})
-
-      data = data.filter(function(x) {
-        if(companySelect == 'Todos' || companySelect == ''){
-          return x
-        }else{
-          return x.company == companySelect
-        }
-      })
-
-      var div1 = d3.select('#boxonereview')
-      d3.select('.boxonereview .card-body-icon').append('i').classed('fa fa-fw fa-database', true)
-               d3.select('.boxonereview').style('background-color', scaleColor(1))
-
-      boxNumber2.call(div1, {docs: data, title: "Reviews"})
-
-      
-      var div3         = d3.select('#boxfourreview')
-
-      //CALCULANDO AS MÉTRICAS DE RATING(media, soma, min, max)
-      var metricRating = groupMetric(data,'company','rating')
-      var title1 = 'Mean Rating' //TITULO DA DIV
-      d3.select('.boxthirdreview .card-body-icon').append('i').classed('fa fa-fw fa-calculator ', true)   
-      d3.select('.boxthirdreview').style('background-color', scaleColor(3))
-
-      var format = d3.format(".3n");
-      
-      var avg = d3.mean(metricRating, function(x){ return x.count.avg })
-
-      // INSERINDO INFORMAÇÕES NA DIV COM EFEITOS DE TRANSITIONS
-      div3.append('span')   
-          .transition()
-          .duration(1500)
-          .on("start", function repeat() {
-            d3.active(this)
-              .tween("text", function() {
-                  var that = d3.select(this),
-                      i = d3.interpolateNumber(that.text().replace(/,/g, ""), avg);
-                  return function(t) { that.text( title1 + ' ' + format(i(t))); };
-              })
-              .transition()
-              .delay(2000)
-          });
-
-      var div4 = d3.select('#boxthirdreview')
-      d3.select('.boxfourreview .card-body-icon').append('i').classed('fa fa-fw fa-building', true)  
-      d3.select('.boxfourreview').style('background-color', scaleColor(4))
-
-      var title2 = 'Min Rating'
-      var min = d3.min(metricRating, function(x){ return x.count.min})
-      
-      div4.append('span')   
-                .transition()
-                .duration(1500)
-                .on("start", function repeat() {
-                  d3.active(this)
-                    .tween("text", function() {
-                        var that = d3.select(this),
-                            i = d3.interpolateNumber(that.text().replace(/,/g, ""), min);
-                        return function(t) { that.text( title2 + ' ' + format(i(t))); };
-                    })
-                    .transition()
-                    .delay(2000)
-                });
-
-      var title3 = 'Max Rating'
-      var max = d3.max(metricRating, function(x){ return x.count.max})
-      div4.append('br')
-      div4.append('span')   
-                .transition()
-                .duration(1500)
-                .on("start", function repeat() {
-                  d3.active(this)
-                    .tween("text", function() {
-                        var that = d3.select(this),
-                            i = d3.interpolateNumber(that.text().replace(/,/g, ""), max);
-                        return function(t) { that.text( title3 + ' ' + format(i(t))); };
-                    })
-                    .transition()
-                    .delay(2000)
-                });
-
-
-      var dateUpdate = group(data, ['dateCollect'])
-      dateUpdate.sort(function(x, y){        
-        return d3.descending(x.value,y.value);
-      })
-      
-      var divUpdate = d3.selectAll('.card-footer span').text(dateUpdate[0].value)
-
-
-/******** GRÁFICO DE BARRAS POSITIONS ****************************/
-      w = parseInt(d3.select('#positionchart').style('width')) * 0.9 ,
-      h = parseInt(d3.select('#positionchart').style('width')) * 0.25;
-
-      
-      var barPosition = initVar.call(null, {id: '#positionchart', titleDiv: "", class: '', width: w, height:h})    
-      
-      var x = d3.scaleBand().range([0,barPosition.margins.width]).padding(0.1),
-          //x = d3.scaleLinear().rangeRound([0,barPosition.margins.width]),
-          y = d3.scaleLinear().rangeRound([barPosition.margins.height,0])
-          //y = d3.scaleBand().range([barPosition.margins.height, 0]).padding(0.1);
-
-            
-      var groupPosit = group(data,['position'])
-      groupPosit = groupPosit.filter(function(x){ return x.value != ''})
-
-      
-      groupPosit.sort(function(x, y){        
-        return y.count - x.count;
-      })
-  
-      groupPosit = groupPosit.slice(0,10)
     
-      barChart.call(barPosition.g, {data: groupPosit, margins: barPosition, axis: {x : x, y : y},horizontal: false, setFill: true } )  
+  // CRIANDO OBJETO PARA GERAR OS 'tooltip' DOS GRÁFICOS
+  var tooltip = d3.select("body").append("div").attr("class", "toolTip");
 
-/******** GRÁFICO DE BARRA DATE(YEAR) ****************************/
-      w = parseInt(d3.select('#barchartreviews').style('width')) * 0.9 ,
-      h = parseInt(d3.select('#barchartreviews').style('width')) * 0.25;
+  // CRIANDO OBJETO PARA CONVERTER DATAS
+  var parseTime = d3.timeParse("%Y-%m-%d");
 
-      var bar = initVar.call(null, {id: '#barchartreviews', titleDiv: "", class: '', width: w, height:h})    
-      
-      var x = d3.scaleBand().range([0,bar.margins.width]).padding(0.1),
-          //x = d3.scaleLinear().rangeRound([0,bar.margins.width]),
-          y = d3.scaleLinear().rangeRound([bar.margins.height,0])
-          //y = d3.scaleBand().range([bar.margins.height, 0]).padding(0.1);
+  // CRIANDO OBJETO PARA FORMATAR NÚMERO
+  var format = d3.format(",d"); 
 
-      var years = data.map(function(x){
-        return {value: new Date(x.date).getFullYear() }
-      })
-            
-      groupYear = group(years,['value'])
-      groupYear = groupYear.filter(function(x){ return x.value != 'NaN'})
-      
-      groupYear.sort(function(x, y){        
-        return x.value - y.value;
-      })
+  //VARIAVEIS PARA O CAMINHO DOS ARQUIVOS E NOME DAS 'KEYs' DO OBJETO ONDE SERÃO ARMAZENADOS
+  var paths = ['data/jobsFinal.csv', "data/reviewFinal.csv","data/clusterReq2.csv"]
+  var names = ['jobs','reviews','clusterReq']
+  for(var i = 0; i < paths.length; i++){
+    readData(paths[i],names[i])  
+  }
 
-      barChart.call(bar.g, {data: groupYear, margins: bar, axis: {x : x, y : y},horizontal: false, setFill: true } )
+  
+  //FUNÇÃO PARA INSERIR O NÚMERO TOTAL DE REGISTROS NA PÁGINA INICIAL
+  function numJobsReview(){
+    console.log(dados)
+    d3.select('.numbjobs').text(dados.jobs.length.toLocaleString('de-DE'))
+    d3.select('.numbreviews').text(dados.reviews.length.toLocaleString('de-DE')) 
+  }
 
-/******** GRÁFICO DE PIZZA RECOMMENDS ****************************/
-      var pieRecommend = initVar.call(null, {id: '#pierecommend', titleDiv: "", class: '', width: '300', height:'250'})    
-      
-      var groupRecommend = group(data,['recommend'])
-      groupRecommend = groupRecommend.filter(function(x) {return x.value != "" })
-
-      pieChar.call(pieRecommend.g, {data: groupRecommend, margins: pieRecommend})
-
-/******** GRÁFICO TREEMAP CITY ****************************/
-      w = parseInt(d3.select('#treemapreview').style('width')) * 0.9,
-      h = parseInt(d3.select('#treemapreview').style('height')) * 12
-      var barCity = initVar.call(null, {id: '#treemapreview', titleDiv: "", class: 'treemap', width: w, height:h})    
-
-      var groupCity = group(data, ['city'])
-            
-      var x = d3.scaleBand().range([0,barCity.margins.width]).padding(0.1),//d3.scaleLinear().rangeRound([0,vars.margins.width]),
-          y = d3.scaleLinear().rangeRound([barCity.margins.height,0]);//d3.scaleBand().range([vars.margins.height, 0]).padding(0.1);
-
-      groupCity.sort(function(x,y){
-        return y.count - x.count;
-      })
-      groupCity = groupCity.filter(function(x) {return x.value != 'NI'}).slice(0,20)
-      
-      treeMap.call(barCity.g, {data: groupCity, margins: barCity.margins})
-
-/******** GRÁFICO DE BOLHAS PROS ****************************/
-      w = parseInt(d3.select('#bubblepros').style('width')) * 0.9,
-      h = parseInt(d3.select('#bubblepros').style('height')) * 9
-
-      var bubPros = initVar.call(null, {id: '#bubblepros', titleDiv: "", class: '', width: w, height:h})
-
-      var arrayPros = []
-      data.map(function(x){
-        x.pros.split(' ').map(function(d){
-          arrayPros.push({pros:d})
-        })
-      })
-      var groupProsComents = group(arrayPros,['pros'])
-      groupProsComents = groupProsComents.filter(function(x) {return x.value != "" })
-      
-      // RECUPERANDO AS 150 PRIMEIRAS PALAVRAS
-      groupProsComents = groupProsComents.slice(0,150)
-      groupProsComents.sort(function(x,y){
-        return y.count - x.count
-      })
-
-      bubPros.margins.margin.bottom = 100;
-      bubPros.margins.margin.left = 30;
-
-      //INSERINDO ATRIBUTOS NO ELEMENTO
-      bubPros.g.attr("text-anchor","middle").attr('font-family',"sans-serif").attr('font-size',"10")
-      bubbleChart.call(bubPros.g, {data: groupProsComents,margins: bubPros.margins, setColor: 'interpolateGreens'})
-
-/******** GRÁFICO DE BOLHAS CONS ****************************/
-      w = parseInt(d3.select('#bubblecons').style('width')) * 0.9,
-      h = parseInt(d3.select('#bubblecons').style('height')) * 9
-
-      var bubCons = initVar.call(null, {id: '#bubblecons', titleDiv: "", class: '', width: w, height:h})
-
-      var arrayCons = []
-      data.map(function(x){
-        x.cons.split(' ').map(function(d){
-          arrayCons.push({pros:d})
-        })
-      })
-      var groupConsComents = group(arrayCons,['pros'])
-      groupConsComents = groupConsComents.filter(function(x) {return x.value != "" })
-      groupConsComents = groupConsComents.slice(0,150)
-      groupConsComents.sort(function(x,y){
-        return y.count - x.count
-      })
-
-      bubCons.margins.margin.bottom = 100;
-      bubCons.margins.margin.left = 30;
-
-      bubCons.g.attr("text-anchor","middle").attr('font-family',"sans-serif").attr('font-size',"10")
-      bubbleChart.call(bubCons.g, {data: groupConsComents,margins: bubCons.margins, setColor: 'interpolateReds'})
+  //CHAMANDO A FUNÇÃO numjobs COM DALEY
+  setTimeout(numJobsReview,900);
 
 
-} // FIM FUNÇÃO CHARTSREVIEWS
+
+  // FUNÇÃO PARA MONSTAR OS GRÁFICOS AO SELECIONAR O MENU 'DASHBOARDS JOBS VACANCIES'
+  $('#menudashboardjobs').on('click',function(e){
+      setTimeout(chartsJobs,250,'');
+  })
+
+  // FUNÇÃO PARA REFAZER OS GRÁFICOS AO SELECIONAR UM PAÍS
+  $('#selcountry').on('change',function(){
+    chartsJobs(this.value)
+  })
+
+
+  //CHAMANDO FUNÇÃO PARA MONTAR GRÁFICOS A SELECIONA O MENU companies Reviews
+  $('#menudashboardreviews').on('click',function(e){
+      setTimeout(chartsReviews,250,'');
+  })
+
+  //REFAZENDO GRÁFICOS AO SELECIONA UMA EMPRESA NO COMBO
+  $('#selcompany').on('change',function(){
+    chartsReviews(this.value)
+  })
+
+
+  // FUNÇÃO PARA REDIMENSIONAR OS GRÁFICOS AO ALTERAR O ZOOM DA PÁGINA
+  function resize(){
+    if( $('#dashboardjobs').hasClass('active')) {
+      $('.card-body > *').empty()
+      chartsJobs($('#selcountry').val()) 
+    }
+  }
 
 
   $("#sidenavToggler").click(function(e) {
@@ -1017,8 +469,7 @@ function chartsReviews(companySelect){
   });
   $('.navbar-toggler').click(function(e){
     var id = $(this).data("target")
-    $( id).addClass('show')
-    //console.log($(this).data("target"))
+    $( id).addClass('show')    
   })
 </script>
 	</body>

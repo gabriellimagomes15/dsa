@@ -159,6 +159,7 @@ function chartsReviews(companySelect){
           y = d3.scaleLinear().rangeRound([bar.margins.height,0])
           //y = d3.scaleBand().range([bar.margins.height, 0]).padding(0.1);
 
+
       var years = data.map(function(x){
         return {value: new Date(x.date).getFullYear() }
       })
@@ -214,13 +215,7 @@ function chartsReviews(companySelect){
       groupProsComents = groupProsComents.filter(function(x) {return x.value != "" })
       
       // RECUPERANDO AS 150 PRIMEIRAS PALAVRAS
-      var mediaTermos = d3.mean(groupProsComents, function(x){ return x.count})
-      console.log(mediaTermos)
-      
-
-      //groupProsComents = groupProsComents.slice(0,150)
-      
-      groupProsComents = groupProsComents.filter(function(x){ return x.count > (mediaTermos*500)})
+      groupProsComents = groupProsComents.slice(0,150)
       groupProsComents.sort(function(x,y){
         return y.count - x.count
       })
@@ -246,12 +241,7 @@ function chartsReviews(companySelect){
       })
       var groupConsComents = group(arrayCons,['pros'])
       groupConsComents = groupConsComents.filter(function(x) {return x.value != "" })
-      //groupConsComents = groupConsComents.slice(0,150)
-      
-      mediaTermos = d3.mean(groupConsComents, function(x){ return x.count})
-      
-      groupConsComents = groupConsComents.filter(function(x){ return x.count > (mediaTermos*500)})
-      
+      groupConsComents = groupConsComents.slice(0,150)
       groupConsComents.sort(function(x,y){
         return y.count - x.count
       })

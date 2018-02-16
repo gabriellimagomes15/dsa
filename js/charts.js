@@ -1,8 +1,14 @@
 /**********************************************************************************
 ******************************** VARIAVEIS GLOBAIS ********************************/
 
+// OBJETO PARA ARMAZENAR OS DADOS CARREGADOS
 var dados = {};
+//VARIAVIES PARA EFEITOS DE DELAY
+var delay = 2000;
+var duration = 1500;
+
 var limitSelec = 1;
+
 /**************************************************************************************************************************************************************************
 **************************************************************************************************************************************************************************
 
@@ -14,24 +20,6 @@ var limitSelec = 1;
 
 /**********************************************************************************
 ******************************** FUNÇÕES ********************************/
-
-var paths = ['data/jobsFinal.csv', "data/reviewFinal.csv","data/clusterReq2.csv"]
-var names = ['jobs','reviews','clusterReq']
-for(var i = 0; i < paths.length; i++){
-  readData(paths[i],names[i])  
-}
-
-//CHAMANDO A FUNÇÃO PARA CARREGAR OS DADOS E CHAMAR A FUNÇÃO numjobs
-//readData(paths,names)
-
-setTimeout(numbjobs,750);
-
-//FUNÇÃO PARA INSERIR O NÚMERO TOTAL DE REGISTROS NA PÁGINA INICIAL
-function numbjobs(){
-  console.log(dados)
-  var data = dados.jobs
-  d3.select('.numbjobs').text(data.length.toLocaleString('de-DE')) 
-}
 
 //FUNÇÃO PARA LER OS DADOS. OS DADOS SERÃO ARMAZENADOS EM UM OBJETO CHAMADO dados
  // PARAMETROS: paths(caminho do arquivo); names(nome da chave onde serão armazenados os dados. )
@@ -99,8 +87,8 @@ function drawAxix(params){
 		.attr("class", "axis axis--x")
 		.attr("transform", "translate(0," + params.margins.margins.height + ")")//params.margins.margins.height
 		.transition()
-		.delay(2000)
-		.duration(1500)
+		.delay(delay)
+		.duration(duration)
 		.call(d3.axisBottom(params.axis.x))			
   	.selectAll("text")
 		.style("text-anchor", "end")
@@ -112,8 +100,8 @@ function drawAxix(params){
   	this.append("g")
 		.attr("class", "axis axis--y")		
 		.transition()
-		.delay(2000)
-		.duration(1500)
+		.delay(delay)
+		.duration(duration)
 		.call(d3.axisLeft(params.axis.y).ticks(10,"s"))//params.axis.
 }
 
@@ -138,7 +126,7 @@ function barChart(params){
 				.delay(function(d, i) {
 					return i * 100;
 				})
-			.duration(1500)
+			.duration(duration)
 			.attr("y", function(d) { return params.axis.y(d.value); })
 			.attr("height", params.axis.y.bandwidth() )
 			.attr("width", function(d) { return params.axis.x(d.count)})
@@ -153,7 +141,7 @@ function barChart(params){
 			.delay(function(d, i) {
 				return i * 100;
 			})
-			.duration(1500)
+			.duration(duration)
 			.attr("x", function(d) { return params.axis.x(d.value); })
 			.attr("y", function(d) { return params.axis.y(d.count); })
 			.attr("width", params.axis.x.bandwidth())
@@ -184,10 +172,9 @@ function pieChar(params){
 	var opacity = .65;
 	var opacityHover = 1;
 	var otherOpacityOnHover = opacity;//.7;
-	var duration = 1500;
-	var delay    = 1000;
+	//	var duration = 500;
+	var delayPie = (delay * 0.3); //PEGANDO % DO DELAY GLOBAL
 
-	//var radius = Math.min(width-padding, height-padding) / 2;
 	var radius = Math.min(width, height) / 1.8;
 	var color  = d3.scaleOrdinal(d3.schemeCategory10);
 		var scaleColor = d3.scaleSequential(d3["interpolateBlues"])
@@ -199,7 +186,7 @@ function pieChar(params){
 	            .innerRadius(0)
 	            .outerRadius(radius);
 
-    //VARIAVEL PARA AUMENTAR AO PASSAR O MOUSE POR CIMA DA ÁREA
+    //VARIAVEL PARAR O RAIO DO ARCO DA GRAFICO PIZZA
 	var arcOver = d3.arc()
 				    .innerRadius(0)
 					.outerRadius(radius + 10);
@@ -217,7 +204,7 @@ function pieChar(params){
 		.attr('fill', function(d, i){ return color(d.data.count);} )
 		.transition()
 		.delay(function(d,i){
-			return i * delay;
+			return i * delayPie;
 		})
 		.duration(duration)
 		.attr('d', arc)
@@ -233,20 +220,11 @@ function pieChar(params){
 			d3.select(this)
 				.style("opacity", opacityHover)
 				.attr('d', arcOver)
-			/*	.transition()
-				.delay(0)
-				.duration(500)
-			
-			*/
 			tooltip
 				.style("left", d3.event.pageX - 50 + "px")
 				.style("top", d3.event.pageY - 70 + "px")
 				.style("display", "inline-block")				
-				//.html(`${d.data.value} <br> ${d.data.count.toLocaleString('de-DE')}`)
 				.html(d.data.value + '<br>' + d.data.count.toLocaleString('de-DE') )
-				//(d.count.toLocaleString('de-DE'))
-				//.html((d.data.value) + '<br>' + (d.data.count) )
-				
 		})
 		.on("mouseout", function(d){
 			d3.select(this)
@@ -262,7 +240,7 @@ function pieChar(params){
 		.each(function(d, i) { this._current = i; });
 
 		//TAMANHO DO RETANGO DA LEGENDA SERÁ 5% DO WIDTH
-		var legendRectSize = width * 0.05; //18;
+		var legendRectSize = width * 0.05;
         var legendSpacing = 4;
         var legend = this.selectAll('.legend')                     
 						.data(data)                                   
@@ -277,22 +255,20 @@ function pieChar(params){
 							return 'translate(' + horz + ',' + vert + ')';        
 						});                                                     
 
-
     legend.append('rect')
     	.transition()
 		.delay(function(d,i){
-			return i * delay;
+			return i * delayPie;
 		})
 		.duration(duration)
 		.attr('width', legendRectSize)                          
 		.attr('height', legendRectSize)                         
 		.style('fill', function(d) { return color(d.count); })
-		//.style('stroke', color);
-
+		
     legend.append('text')
     	.transition()
 		.delay(function(d,i){
-			return i * delay;
+			return i * delayPie;
 		})
 		.duration(duration)                
         .attr('x', legendRectSize + legendSpacing)              
@@ -302,6 +278,7 @@ function pieChar(params){
 
 
 //FUNÇÃO PARA CRIAR UMA DIV DINAMICAMENTE
+ //RECEBE UM OBJETO COMO PARAMETRO, CONTENDO: id, class e título da Div
 function createDiv(params){
 	var div = d3.select(params.id)
 	          .append("div")
@@ -316,6 +293,7 @@ function createDiv(params){
 
 
 // FUNÇÃO PARA CRIAR SVG DINAMICAMENTE
+ //RECEBE UM OBJETO COMO PARAMETRO, CONTENDO: id do SVG, width, height
 function createSvg(params){
 	var svg = this.append("svg")
 				.attr('id', params.idSvg)
@@ -326,6 +304,7 @@ function createSvg(params){
 }
 
 // FUNÇÃO PARA CRIAR MARGENS DINAMICAMENTE PARA O GRÁFICO
+  //RECEBE UM OBJETO COMO PARAMETRO, CONTENDO: valor de margin (top, right, bootom e left)
 function createMargins(params){	
 	var medidas = {}
     medidas.margin = {top: params.top, right: params.right, bottom: params.bottom, left: params.left};
@@ -337,6 +316,8 @@ function createMargins(params){
 
 
 // FUNÇÃO PARA INICIALIZAR VARIAVEIS E OBJETOS PARA CRIAR GRÁFICOS
+ //RECEBE UM OBJETO COMO PARAMETRO, CONTENDO: id para a DIV, titulo da DIV, class da DIV,
+   //valores de width, height para o SVG, id do SVG
 function initVar(params){
 	//CRIANDO DIV COM A FUNÇÃO
 	var div = createDiv.call(null, {id: params.id, titleDiv: params.titleDiv, class: params.class });
@@ -356,6 +337,7 @@ function initVar(params){
 
 
 //FUNÇÃO PARA CRIAR BOXES COM INFORMAÇÕES NUMÉRICAS
+ //RECEBE UM OBJETO COMO PARAMETRO, CONTENDO: id, class e título da Div
 function boxNumber(params){
 	var format = d3.format(",d");
 
@@ -370,7 +352,7 @@ function boxNumber(params){
 		
 		this.append('h4')		
 			.transition()
-            .duration(1500)
+            .duration(duration)
             .on("start", function repeat() {
               d3.active(this)
                 .tween("text", function() {
@@ -379,7 +361,7 @@ function boxNumber(params){
                     return function(t) { that.text(format(i(t))); };
                 })
                 .transition()
-                .delay(2000)
+                .delay(delay)
             });
 			//.text(params.docs.resultCount.toLocaleString('de-DE'))
 	}else if(params.inst){ //BOX COM TOTAL DE INSTITUIÇÕES PARTICIPANTES
@@ -390,7 +372,7 @@ function boxNumber(params){
 		var h2 = this.append('h2').text(params.title)
 		
 		this.append('h4').transition()
-            .duration(1500)
+            .duration(duration)
             .on("start", function repeat() {
               d3.active(this)
                 .tween("text", function() {
@@ -399,13 +381,14 @@ function boxNumber(params){
                     return function(t) { that.text(format(i(t))); };
                 })
                 .transition()
-                .delay(2000)
+                .delay(delay)
             });
             //.text(params.inst.length.toLocaleString('de-DE'))		
 	}	
 }
 
 //FUNÇÃO PARA FAZER GRÁFICO DE BOLHAS
+ //RECEBE UM OBJETO COMO PARAMETRO, CONTENDO: margins, setColor, data, 
 function bubbleChart (params){
 	
 	var width  = params.margins.width; 
@@ -417,7 +400,6 @@ function bubbleChart (params){
 
 	var color = d3.scaleOrdinal(d3.schemeCategory20c);
 	
-	console.log('bubble = ', params, params.hasOwnProperty("setColor"))
 	if(params.hasOwnProperty("setColor") && params.setColor != ''){
 		var scaleColor = d3.scaleSequential(d3[params.setColor]).domain([0, d3.max(params.data, function(d) { return d.count; })]);
 	}else{
@@ -426,14 +408,12 @@ function bubbleChart (params){
 	var opacity = 0.55,
 		opacityHover = 1;
 	
-
 	var root = d3.hierarchy({children: params.data})
 	  .sum(function(d) { return d.count; })
 	  .each(function(d) {	  	
 	    if (id = d.data.value) {
 	      var id, i = id.lastIndexOf(".");
 	      d.id      = id;
-	      //d.package = id.slice(0, i);	      console.log(d.package)     //d.class   = id.slice(i + 1);
 	    }
 	});
 
@@ -463,8 +443,6 @@ function bubbleChart (params){
 	  .attr("y", function(d, i, nodes) { return 13 + (i - nodes.length / 2 - 0.5) * 10; })
 	  .text(function(d) { return d; });
 
-	//node.append("title").text(function(d) { return d.id + "\n" + format(d.value); });
-
 	node.on("mousemove", function(d){
 		d3.select(this).select('circle').transition().delay(0).duration(100)
 			.attr("r", function(d) { return d.r + 10; }) //.style("fill", 'red');
@@ -487,7 +465,8 @@ function bubbleChart (params){
 	});
 }
 
-
+//FUNÇÃO PARA FAZER GRÁFICO DE LINHA
+ //RECEBE UM OBJETO COMO PARAMETRO, CONTENDO: margins, data,
 function lineChart(params){
 	var width  = params.margins.width,
 		height = params.margins.height,
@@ -511,8 +490,7 @@ function lineChart(params){
 		.style("font-size", "11px")
 		.attr("dx", "-.8em")
 		.attr("dy", ".8em")
-		.attr("transform", "translate(0,0) rotate(-40)" ); //
-		//.select(".domain")	      .remove();
+		.attr("transform", "translate(0,0) rotate(-40)" ); 
 
 	this.append("g")    			  
 			  .attr("class", "y-axis")
@@ -526,7 +504,6 @@ function lineChart(params){
 	  .attr("y", 6)
 	  .attr("dy", "0.71em")
 	  .attr("text-anchor", "end")
-	  //.text("Price ($)");
 
 	this.append("path").attr('class','line')
 		.datum(data)
@@ -560,48 +537,36 @@ function lineChart(params){
         .on("mouseout", function(d) {		
             d3.select(this).style("opacity", .5)
             .style('fill', '').transition()		
-                .duration(500);
+                .duration(200);
             tooltip.style("display", "none")
         });
 }
 
+//FUNÇÃO PARA FAZER GRÁFICO TREE MAP
+ //RECEBE UM OBJETO COMO PARAMETRO, CONTENDO: margins, data,
 function treeMap(params){
-  var data = params.data,//d3.select("svg"),
-    width = params.margins.width,//+svg.attr("width"),
-    height = params.margins.height;//+svg.attr("height");
+	var data = params.data,
+	  width  = params.margins.width,
+	  height = params.margins.height;
 
-  var fader = function(color) { return d3.interpolateRgb(color, "#fff")(0.2); },
-      color = d3.scaleOrdinal(d3.schemeCategory20.map(fader)),
-      format = d3.format(",d");
-   	
+	var format = d3.format(",d");
+		
 	var scaleColor = d3.scaleSequential(d3["interpolateBlues"])
 					   .domain([0, d3.max(params.data, function(d) { return d.count; })]);
 
+	var treemap = d3.treemap()
+	  .tile(d3.treemapResquarify)
+	  .size([width, height])
+	  .round(true)
+	  .paddingInner(1);
 
-  var treemap = d3.treemap()
-      .tile(d3.treemapResquarify)
-      .size([width, height])
-      .round(true)
-      .paddingInner(1);
-
-  //d3.json("flare.json", function(error, data) {
-  
-
-    //console.log('data - ', data)
-
-    /*var root = d3.hierarchy(data)
-        .eachBefore(function(d) { d.data.id = (d.parent ? d.parent.data.id + "." : "") + d.data.name; })
-        .sum(sumBySize)
-        .sort(function(a, b) { return b.height - a.height || b.value - a.value; });*/
-
-     var root = d3.hierarchy({children: data})
+	 var root = d3.hierarchy({children: data})
 	  .sum(function(d) { return d.count; })
 	  .each(function(d) {	  	
 	    if (id = d.data.value) {
 	      var id, i = id.lastIndexOf(".");
 	      d.id      = id;
-	      //d.package = id.slice(0, i);	      console.log(d.package)     //d.class   = id.slice(i + 1);
-	    }
+	  }
 	});
 
     treemap(root);
@@ -640,13 +605,8 @@ function treeMap(params){
         .data(function(d) {  
 
         	var id = d.id.split(/(?=[A-Z][^A-Z])/g)
-        	/*var dd = ''+ d.value +'';
-        	    //dd = dd.split(/(?=[A-Z][^A-Z])/g)
-        	var r = d.id + ' = ' + dd
-        	var id = r.split(/(?=[A-Z][^A-Z])/g)*/
-        	
-
-        	return  id/*d.data.name.split(/(?=[A-Z][^A-Z])/g)*/; })
+        	return  id; 
+      	})
       .enter().append("tspan")
         .attr("x", 4)
         .attr("y", function(d, i) { return 13 + i * 10; })
@@ -654,17 +614,13 @@ function treeMap(params){
 
     cell.append("title")
         .text(function(d) {  return d.id + "\n" + format(d.data.count); });
-
-   
-  //});
 }
 
 function boxNumber2(params){
-	var format = d3.format(",d");
-	
-	this.append('span')		
-		.transition()
-        .duration(1500)
+       var format = d3.format(",d");       
+       this.append('span')             
+               .transition()
+        .duration(duration)
         .on("start", function repeat() {
           d3.active(this)
             .tween("text", function() {
@@ -673,8 +629,8 @@ function boxNumber2(params){
                 return function(t) { that.text(format(i(t)) + ' ' + params.title); };
             })
             .transition()
-            .delay(2000)
+            .delay(delay)
         });
-		//.text(params.docs.resultCount.toLocaleString('de-DE'))
-	
 }
+
+

@@ -1,6 +1,11 @@
 /*******************************************
       CLASS TO MODIFY GRAPHICS
 *********************************************/
+
+.ui-dialog-titlebar-close{
+  display: none !important;
+  visibility: hidden !important;
+}
 .bar {
   fill: steelblue;
 }
