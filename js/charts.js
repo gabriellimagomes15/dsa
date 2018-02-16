@@ -15,23 +15,31 @@ var limitSelec = 1;
 /**********************************************************************************
 ******************************** FUNÇÕES ********************************/
 
-// FUNÇÃO PARA RETORNAR UMA FUNÇÃO COM PROPERTYNAME.
-// UTILIZADA PARA CRIAR O GROUPBY DINAMICAMENTE
+var paths = ['data/jobsFinal.csv', "data/reviewFinal.csv","data/clusterReq2.csv"]
+var names = ['jobs','reviews','clusterReq']
+for(var i = 0; i < paths.length; i++){
+  readData(paths[i],names[i])  
+}
 
-function readData (){
-	console.log('Lendo Dados')
-	  var def = $.Deferred();
+//CHAMANDO A FUNÇÃO PARA CARREGAR OS DADOS E CHAMAR A FUNÇÃO numjobs
+//readData(paths,names)
 
-	d3.csv('data/jobsFinal.csv', function(error, data){
-  		dados.jobs = data;
+setTimeout(numbjobs,750);
+
+//FUNÇÃO PARA INSERIR O NÚMERO TOTAL DE REGISTROS NA PÁGINA INICIAL
+function numbjobs(){
+  console.log(dados)
+  var data = dados.jobs
+  d3.select('.numbjobs').text(data.length.toLocaleString('de-DE')) 
+}
+
+//FUNÇÃO PARA LER OS DADOS. OS DADOS SERÃO ARMAZENADOS EM UM OBJETO CHAMADO dados
+ // PARAMETROS: paths(caminho do arquivo); names(nome da chave onde serão armazenados os dados. )
+function readData (path, names){
+	console.log(path,names)
+	d3.csv(path, function(error, data){
+  		dados[names] = data;
   	});
-  	d3.csv("data/reviewFinal.csv", function(error, data) {
-  		dados.reviews = data
-  	});
-  	d3.csv("data/clusterReq2.csv", function(error, data) {
-  		dados.clusterReq = data
-  	});
-  	return def;
 }
 
 function createNestingFunction(propertyName){
@@ -82,80 +90,6 @@ function groupMetric(data, fieldGroup, fieldMetric){
 	nest = JSON.parse(JSON.stringify(nest).split('"key":').join('"value":')); //ALTERAR NOME DOS ATRIBUTOS DO JSON
 
     return nest;
-}
-
-
-// FUNÇÃO PARA MONTAR MULTISELECT COM PLUGIN 'multiSelect Jquery'
-function montaSearchble(){
-  $('.searchable').multiSelect({    
-    selectableHeader: "<input type='text' class='search-input' autocomplete='off' placeholder='Selecione a instituição para inserir'>",
-    selectionHeader: "<input type='text' class='search-input' autocomplete='off' placeholder='Retirar a instituição do gráfico'>",
-    afterInit: function(ms){
-      var that = this,
-          $selectableSearch = that.$selectableUl.prev(),
-          $selectionSearch = that.$selectionUl.prev(),
-          selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
-          selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
-      
-      that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-      .on('keydown', function(e){
-        if (e.which === 40){
-          that.$selectableUl.focus();
-          return false;          
-        }
-      });
-
-      that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-      .on('keydown', function(e){
-        if (e.which == 40){          
-          that.$selectionUl.focus();
-          return false;
-        }
-      });
-    },
-    afterSelect: function(){
-      this.qs1.cache();
-      this.qs2.cache();
-      $('#row-2 > #loading').show();
-      
-      var qtdSelec = $('.ms-selection').find('.ms-list > .ms-elem-selection.ms-selected');
-      
-      d3.selectAll("#row-2 > #charts > *").empty();
-      d3.selectAll("#row-2 > #charts > *").remove();
-
-
-
-      if(qtdSelec.length == limitSelec){
-        $('.ms-selectable').find("*").prop('disabled', true);
-        alert('Limite de instuições é de ' + limitSelec)
-      }
-
-      url = montaURLAPI(qtdSelec, true)
-      
-      //console.log(url)
-      //teste()
-      multIns({inst: $(qtdSelec).text()})
-      //readApiFacet("#row-2","Quantidade de Documentos por Instituição", url);
-    },
-    afterDeselect: function(){
-      this.qs1.cache();
-      this.qs2.cache();
-      var qtdSelec = $('.ms-selection').find('.ms-list > .ms-elem-selection.ms-selected')
-
-	  d3.selectAll("#row-2 > #charts > *").empty();
-      d3.selectAll("#row-2 > #charts > *").remove();
-
-      if(qtdSelec.length < limitSelec){
-        $('.ms-selectable').find("*").prop('disabled', '');
-      }            
-      //url = montaURLAPI(qtdSelec, true)
-
-      //multIns({inst: $(qtdSelec).text()})
-
-      //readApiFacet("#row-2","Quantidade de Documentos por Instituição", url);
-      // CHAMAR FUNÇÃO PARA BUSCAR INSTITUIÇÕES SELECIONADAS A CADA SELEÇÃO
-    }
-  });
 }
 
 

@@ -117,7 +117,6 @@ function chartsJobs(countrySelect){
       })
 
 
-      //TOTAL DE INSTITUIÇÕES PARTICIPANTES
       var div1 = d3.select('#boxnumber')
       
       d3.select('.boxone .card-body-icon').append('i').classed('fa fa-fw fa-database', true)
