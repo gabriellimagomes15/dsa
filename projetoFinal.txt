@@ -1,0 +1,72 @@
+
+1- Sumário Executivo do projeto
+2- Apresentação/Demonstração da Solução
+3- Um vídeo de até 2minutos,apresentando a visão geral do projeto
+4- Um vídeo de até 15minutos apresentando a solução técnica do projeto 
+5- Relatório com os detalhes técnicos da solução
+
+
+== APRESENTAÇÃO
+ - Objetivos (vídeo visao geral do projeto)
+ 	* criar base de dados com vagas de emprego (com foco em DS) e avaliações de empresas (com foco em emp. de tecnologia) e disponibilizar essas bases
+ 	* integraçao de base de dados
+ 	* aplicar técnicas de DM para identificar padroes de skills e classificar empresas de acordo com os comentários
+ 	* criar dashboards para visualizaçao de todas essas informaçoes
+
+ - Ferramentas (vídeo visao geral do projeto)
+ 	* R
+ 	* Postgres + PostGIS + QGis
+ 	* HTML
+ 	* JS
+ 	* JQuery
+ 	* Bootstrap
+ 	* D3.js
+
+ - Fluxograma do sistema (da coleta à visualização) (vídeo visao geral do projeto)
+ 
+  - ETL
+ 	* Extration:
+ 		- web scraping
+ 	* Tranform:
+ 		- limpeza dos dados
+ 		- criacao de novas variaveis: skills, languages, education, state, city, position e status(avaliacoes)
+ 		- conversao: dataPostagem
+ 	* Load:
+ 		- arquivos CSV e RData
+
+ - descricao dos dados
+ 	* geral
+ 		- vagas de emprego: total de registros, vagas para DS, 3 paises em 3 sites diferentes
+ 		- avaliacoes de emp: total de registros, avalicoes para empresas de tecnologia, 7 empresas diferentes
+
+ 	* para o modelo de classificacao (var dep, indepen etc)
+ 
+ - selecao de entidades
+ 	* visualizaçao
+ 		- date, city, state, skills, language, education, cluster, comments
+ 	* cluster
+ 		- foram selecionados os campos skill, languages e education
+ 	* classificacao
+ 		- titulo, comentsPros, commentsCons
+ 
+ - metodologia e resultados do modelo (DM e ML)
+ 	* cluster
+ 		- Kmeans
+ 	* classificacao
+ 
+ - resultados dos modelos
+ 	* cluster
+ 		- foram gerados 4 clusters
+ 	* classificacao
+ 		- accuracia dos modelos utilizados
+ 		- modelo utilizado (com melhor acuracia)
+ 
+ - Soluçao proposta
+ 	* usar os resultados para os gestores verem o que deve ser mudados e/ou melhorado
+ 	* os resultados podem ser utilizados por profissionais para terem conhecimento sobre oportunidades, skills exigidos, cidades tendencia de vagas
+ 	* modelo de classificacao
+	 	- aplicar o modelo para classificar a recomendacao da empresa baseada nos comentarios
+	 	- pode implementar outro modelo baseado em outros campos (salario, beneficios etc)
+
+
+ 	
