@@ -475,4 +475,12 @@ cleanJobsIndeed <- function(dados){
 } ## END cleanJobsIndeed function
 
 
-
+cleanJobsFinal <- function(){
+  j <- fread('data/jobsFinal.csv',encoding = 'UTF-8')
+  j$city <- gsub('Sao Paulo','São Paulo',j$city)
+  
+  t <- data.frame(table(j$city))
+  
+  fwrite(j,'data/jobsFinal.csv')
+  
+}
