@@ -213,14 +213,16 @@ function chartsReviews(companySelect){
       var groupProsComents = group(arrayPros,['pros'])
       groupProsComents = groupProsComents.filter(function(x) {return x.value != "" })
       
-      // RECUPERANDO AS 150 PRIMEIRAS PALAVRAS
-      var mediaTermos = d3.mean(groupProsComents, function(x){ return x.count})
-      console.log(mediaTermos)
+      
+      pct = 0.20
+      // RECUPERANDO % DAS PALAVRAS
+      var mediaTermos = d3.max(groupProsComents, function(x){ return x.count})*pct
+      console.log('extent = ', mediaTermos)
       
 
       //groupProsComents = groupProsComents.slice(0,150)
       
-      groupProsComents = groupProsComents.filter(function(x){ return x.count > (mediaTermos*500)})
+      groupProsComents = groupProsComents.filter(function(x){ return x.count > (mediaTermos)})
       groupProsComents.sort(function(x,y){
         return y.count - x.count
       })
@@ -248,9 +250,9 @@ function chartsReviews(companySelect){
       groupConsComents = groupConsComents.filter(function(x) {return x.value != "" })
       //groupConsComents = groupConsComents.slice(0,150)
       
-      mediaTermos = d3.mean(groupConsComents, function(x){ return x.count})
+      mediaTermos = d3.max(groupConsComents, function(x){ return x.count})*pct
       
-      groupConsComents = groupConsComents.filter(function(x){ return x.count > (mediaTermos*500)})
+      groupConsComents = groupConsComents.filter(function(x){ return x.count > (mediaTermos)})
       
       groupConsComents.sort(function(x,y){
         return y.count - x.count
@@ -261,6 +263,18 @@ function chartsReviews(companySelect){
 
       bubCons.g.attr("text-anchor","middle").attr('font-family',"sans-serif").attr('font-size',"10")
       bubbleChart.call(bubCons.g, {data: groupConsComents,margins: bubCons.margins, setColor: 'interpolateReds'})
+
+
+/******** GRÁFICO PIE PREDIC RECOMMEND ****************************/
+      recomPred = dados.predRecom
+
+      
+      var pieRecommend = initVar.call(null, {id: '#piepredrecommend', titleDiv: "", class: '', width: '300', height:'250'})    
+      
+      var groupRecommend = group(recomPred,['predRecom'])
+      groupRecommend = groupRecommend.filter(function(x) {return x.value != "" })
+
+      pieChar.call(pieRecommend.g, {data: groupRecommend, margins: pieRecommend})
 
 
 } // FIM FUNÇÃO CHARTSREVIEWS

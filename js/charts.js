@@ -612,8 +612,8 @@ function treeMap(params){
         .attr("y", function(d, i) { return 13 + i * 10; })
         .text(function(d) {  return d; });
 
-    cell.append("title")
-        .text(function(d) {  return d.id + "\n" + format(d.data.count); });
+    /*cell.append("title")
+        .text(function(d) {  return d.id + "\n" + format(d.data.count); }); */
 }
 
 function boxNumber2(params){
