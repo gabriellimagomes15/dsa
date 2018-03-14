@@ -265,4 +265,16 @@ function chartsReviews(companySelect){
       bubbleChart.call(bubCons.g, {data: groupConsComents,margins: bubCons.margins, setColor: 'interpolateReds'})
 
 
+/******** GRÁFICO PIE PREDIC RECOMMEND ****************************/
+      recomPred = dados.predRecom
+
+      
+      var pieRecommend = initVar.call(null, {id: '#piepredrecommend', titleDiv: "", class: '', width: '300', height:'250'})    
+      
+      var groupRecommend = group(recomPred,['predRecom'])
+      groupRecommend = groupRecommend.filter(function(x) {return x.value != "" })
+
+      pieChar.call(pieRecommend.g, {data: groupRecommend, margins: pieRecommend})
+
+
 } // FIM FUNÇÃO CHARTSREVIEWS

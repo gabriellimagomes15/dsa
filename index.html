@@ -417,11 +417,12 @@
   var format = d3.format(",d"); 
 
   //VARIAVEIS PARA O CAMINHO DOS ARQUIVOS E NOME DAS 'KEYs' DO OBJETO ONDE SERÃO ARMAZENADOS
-  var paths = ['data/jobsFinal.csv', "data/reviewFinal.csv","data/clusterReq2.csv"]
-  var names = ['jobs','reviews','clusterReq']
+  var paths = ['data/jobsFinal.csv', "data/reviewFinal.csv","data/clusterReq2.csv","data/recommendPred.csv"]
+  var names = ['jobs','reviews','clusterReq','predRecom']
   for(var i = 0; i < paths.length; i++){
     readData(paths[i],names[i])  
   }
+
 
   
   //FUNÇÃO PARA INSERIR O NÚMERO TOTAL DE REGISTROS NA PÁGINA INICIAL
